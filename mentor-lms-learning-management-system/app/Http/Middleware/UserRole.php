@@ -25,7 +25,16 @@ class UserRole
             return $next($request);
         }
 
-        // If user doesn't have the required role
-        return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        // If user doesn't have the required role, avoid redirecting back to login to prevent infinite loop
+        $previousUrl = url()->previous();
+        if ($previousUrl && !str_contains($previousUrl, '/login') && !str_contains($previousUrl, $request->path())) {
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
+
+        if ($request->user()->role === 'student') {
+            return redirect()->route('category.courses', ['category' => 'all'])->with('error', 'You do not have permission to access this page.');
+        }
+
+        return redirect('/')->with('error', 'You do not have permission to access this page.');
     }
 }

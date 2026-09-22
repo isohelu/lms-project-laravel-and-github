@@ -1,22 +1,53 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
-import { Navbar } from '@/components/Navbar'
-import { Footer } from '@/components/Footer'
+import AppShell from '@/components/layout/AppShell'
+import { getOrganizationSchema } from '@/lib/seo/schema'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
   subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'MentorLMS | Enterprise Next.js 15 & AI Engineering Platform',
-  description: 'Master Next.js 15, Supabase, autonomous AI agents, and enterprise cloud architecture with production-grade curriculums and interactive labs.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  title: {
+    default: 'Home 1 | Mentor Learning Management System',
+    template: '%s | Mentor Learning Management System',
+  },
+  description:
+    'Welcome to Mentor LMS - your gateway to transformative learning experiences. Discover expert-led courses, build new skills, and advance your career with our comprehensive online learning platform.',
+  keywords: ['LMS', 'Learning Management System', 'Courses', 'Mentor', 'Education', 'Online Learning'],
+  authors: [{ name: 'UiLib' }],
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/assets/icons/logo-dark.png',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'http://localhost:3000',
+    title: 'Home 1 | Mentor Learning Management System',
+    description:
+      'Welcome to Mentor LMS - your gateway to transformative learning experiences. Discover expert-led courses, build new skills, and advance your career with our comprehensive online learning platform.',
+    siteName: 'Mentor Learning Management System',
+    images: [
+      {
+        url: '/assets/images/intro/home-1/hero-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Mentor Learning Management System',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Home 1 | Mentor Learning Management System',
+    description:
+      'Welcome to Mentor LMS - your gateway to transformative learning experiences. Discover expert-led courses, build new skills, and advance your career with our comprehensive online learning platform.',
+    images: ['/assets/images/intro/home-1/hero-image.png'],
+  },
 }
 
 export default function RootLayout({
@@ -24,12 +55,34 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const organizationJsonLd = getOrganizationSchema()
+
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-indigo-500/30 selection:text-indigo-200">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        {/* Global Schema.org EducationalOrganization structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
+        {/* Instant Theme Initialization Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const a = localStorage.getItem('appearance') || 'system';
+                const dark = a === 'dark' || (a === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (dark) document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className="flex min-h-screen flex-col justify-between overflow-x-hidden font-sans antialiased bg-background text-foreground">
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   )

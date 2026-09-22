@@ -29,6 +29,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(fn() => route('login.index'));
+        $middleware->redirectUsersTo(function () {
+            $user = auth()->user();
+            if ($user && in_array($user->role, ['admin', 'instructor'])) {
+                return route('dashboard');
+            }
+            return route('category.courses', ['category' => 'all']);
+        });
 
         // Trust proxies - must run early to detect HTTPS correctly
         $middleware->trustProxies(at: 0);

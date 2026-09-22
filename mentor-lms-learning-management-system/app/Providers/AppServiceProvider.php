@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -37,6 +38,33 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        try {
+            if (isDBConnected() && DB::connection() instanceof \Illuminate\Database\SQLiteConnection) {
+                $pdo = DB::connection()->getPdo();
+                $pdo->sqliteCreateFunction('MONTH', function ($date) {
+                    if (!$date) return 1;
+                    return (int) date('m', strtotime($date));
+                });
+                $pdo->sqliteCreateFunction('YEAR', function ($date) {
+                    if (!$date) return (int) date('Y');
+                    return (int) date('Y', strtotime($date));
+                });
+                $pdo->sqliteCreateFunction('FIELD', function ($value, ...$fields) {
+                    $pos = array_search($value, $fields);
+                    return $pos === false ? 0 : $pos + 1;
+                });
+                $pdo->sqliteCreateFunction('TIME_TO_SEC', function ($time) {
+                    if (!$time) return 0;
+                    $parts = explode(':', $time);
+                    if (count($parts) === 3) return (int)$parts[0] * 3600 + (int)$parts[1] * 60 + (int)$parts[2];
+                    if (count($parts) === 2) return (int)$parts[0] * 60 + (int)$parts[1];
+                    return (int)$time;
+                });
+            }
+        } catch (\Throwable $th) {
+            // ignore if connection not established yet
+        }
     }
 
     /**
