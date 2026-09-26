@@ -21,8 +21,11 @@ import {
   ChevronDown,
   PanelLeft,
   Bell,
+  Sun,
+  Moon,
   LogOut,
-  UserCheck
+  UserCheck,
+  GraduationCap
 } from 'lucide-react'
 import AppLogo from '@/components/common/AppLogo'
 import {
@@ -242,6 +245,8 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [queryRole, setQueryRole] = useState<'admin' | 'instructor' | null>(null)
+  const [isDark, setIsDark] = useState(false)
   const [currentUser, setCurrentUser] = useState<{
     id?: number
     name?: string
@@ -249,10 +254,43 @@ export default function DashboardLayout({
     role?: 'admin' | 'instructor'
   } | null>(null)
 
+  const [storedRole, setStoredRole] = useState<'admin' | 'instructor' | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const r = params.get('role')
+      if (r === 'instructor' || r === 'admin') {
+        setQueryRole(r)
+        localStorage.setItem('dashboard_role', r)
+      } else {
+        const saved = localStorage.getItem('dashboard_role') as 'admin' | 'instructor' | null
+        if (saved) setStoredRole(saved)
+      }
+      setIsDark(document.documentElement.classList.contains('dark'))
+    }
+  }, [])
+
+  const toggleTheme = () => {
+    if (typeof window !== 'undefined') {
+      const nextDark = !document.documentElement.classList.contains('dark')
+      if (nextDark) {
+        document.documentElement.classList.add('dark')
+        localStorage.setItem('theme', 'dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+        localStorage.setItem('theme', 'light')
+      }
+      setIsDark(nextDark)
+    }
+  }
+
   const activeRole: 'admin' | 'instructor' =
     initialRole ||
+    queryRole ||
+    storedRole ||
     currentUser?.role ||
-    (pathname.startsWith('/instructor') ? 'instructor' : 'admin')
+    'instructor'
 
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>(() => computeInitialAccordions(pathname))
 
@@ -329,7 +367,7 @@ export default function DashboardLayout({
         .slice(0, 2)
         .join('')
         .toUpperCase()
-    : activeRole === 'admin' ? 'SA' : 'IN'
+    : activeRole === 'admin' ? 'SA' : 'LI'
 
   return (
     <div className="flex min-h-screen bg-[#f8fafc] text-foreground antialiased font-sans">
@@ -372,13 +410,13 @@ export default function DashboardLayout({
                     key={item.title}
                     href={item.href!}
                     className={cn(
-                      'flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors',
+                      'flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] font-medium transition-colors',
                       isActive
-                        ? 'bg-[#f1f5f9] text-foreground font-semibold shadow-xs'
-                        : 'text-muted-foreground hover:bg-[#f8fafc] hover:text-foreground'
+                        ? 'bg-muted text-foreground font-semibold shadow-xs'
+                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                     )}
                   >
-                    <Icon className={cn('h-5 w-5 shrink-0', isActive ? 'text-foreground' : 'text-muted-foreground')} />
+                    <Icon className={cn('h-4.5 w-4.5 shrink-0', isActive ? 'text-foreground' : 'text-muted-foreground')} />
                     {sidebarOpen && <span>{item.title}</span>}
                   </Link>
                 )
@@ -390,12 +428,12 @@ export default function DashboardLayout({
                     type="button"
                     onClick={() => toggleAccordion(item.title)}
                     className={cn(
-                      'flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors text-muted-foreground hover:bg-[#f8fafc] hover:text-foreground',
+                      'flex w-full items-center justify-between rounded-lg px-3 py-2 text-[13.5px] font-medium transition-colors text-muted-foreground hover:bg-muted/60 hover:text-foreground cursor-pointer',
                       isOpen && 'text-foreground'
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="h-5 w-5 shrink-0 text-muted-foreground" />
+                      <Icon className="h-4.5 w-4.5 shrink-0 text-muted-foreground" />
                       {sidebarOpen && <span>{item.title}</span>}
                     </div>
                     {sidebarOpen && (
@@ -408,28 +446,37 @@ export default function DashboardLayout({
                     )}
                   </button>
 
-                  {/* Dropdown Children */}
+                  {/* Dropdown Children with Tree Connectors */}
                   {sidebarOpen && isOpen && item.children && (
-                    <div className="ml-7 space-y-1 border-l border-slate-200 pl-3">
-                      {item.children.map((child) => {
+                    <div className="space-y-1 pt-0.5 pb-1">
+                      {item.children.map((child, childIdx) => {
+                        const isLast = childIdx === item.children!.length - 1
                         const isExact = pathname === child.href
                         const hasSiblingMatch = item.children?.some(
                           other => other.href !== child.href && (pathname === other.href || (other.href.length > child.href.length && pathname.startsWith(other.href + '/')))
                         )
                         const isChildActive = isExact || (!hasSiblingMatch && pathname.startsWith(child.href + '/'))
                         return (
-                          <Link
-                            key={child.name}
-                            href={child.href}
-                            className={cn(
-                              'block rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
-                              isChildActive
-                                ? 'text-[#007867] font-semibold bg-[#007867]/5'
-                                : 'text-muted-foreground hover:text-foreground'
-                            )}
-                          >
-                            {child.name}
-                          </Link>
+                          <div className="relative w-full pl-7" key={child.name}>
+                            <span
+                              className={cn(
+                                'absolute top-0 left-4 border-l border-border/60',
+                                isLast ? 'h-1/2' : 'h-full'
+                              )}
+                            />
+                            <span className="absolute top-1/2 left-4 w-3 -translate-y-px rounded-bl-lg border-b border-border/60" />
+                            <Link
+                              href={child.href}
+                              className={cn(
+                                'block rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                                isChildActive
+                                  ? 'bg-muted text-foreground font-medium'
+                                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                              )}
+                            >
+                              {child.name}
+                            </Link>
+                          </div>
                         )
                       })}
                     </div>
@@ -449,65 +496,80 @@ export default function DashboardLayout({
         )}
       >
         {/* Top Header */}
-        <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-transparent bg-white/80 px-6 backdrop-blur-md">
+        <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border/40 bg-background/80 px-6 backdrop-blur-md">
           {/* Left: Sidebar toggle */}
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-muted-foreground hover:bg-slate-50 hover:text-foreground shadow-xs transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
               title="Toggle Sidebar"
             >
-              <PanelLeft className="h-4 w-4" />
+              <PanelLeft className="h-5 w-5" />
             </button>
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-3">
-            {/* Language Pill */}
-            <div className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-100 transition-colors">
-              <span>US</span>
-            </div>
+          <div className="flex items-center gap-2">
+            {/* Language Text Button */}
+            <button
+              type="button"
+              className="flex h-10 items-center justify-center px-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              US
+            </button>
+
+            {/* Theme / Appearance Toggle (Sun icon in light mode, Moon in dark mode) */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+              title="Toggle Theme"
+            >
+              {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+            </button>
 
             {/* Notification Bell */}
             <button
               type="button"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 transition-colors"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
               title="Notifications"
             >
               <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white" />
+              <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
             </button>
 
-            {/* Settings Cog */}
-            <Link
-              href="/dashboard/settings/account"
-              className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 transition-colors"
-              title="Settings"
-            >
-              <Settings className="h-5 w-5" />
-            </Link>
+            {/* Admin-only Settings Cog */}
+            {activeRole === 'admin' && (
+              <Link
+                href="/dashboard/settings/system"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                title="Settings"
+              >
+                <Settings className="h-5 w-5" />
+              </Link>
+            )}
 
             {/* User Avatar with Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-400"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer"
                 >
                   {userInitials}
-                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[#10b981] ring-2 ring-white" />
+                  <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 p-2">
                 <div className="px-2 py-1.5">
-                  <p className="text-xs font-bold text-slate-900 leading-tight">
-                    {currentUser?.name || 'Administrator'}
+                  <p className="text-xs font-bold text-foreground leading-tight">
+                    {currentUser?.name || (activeRole === 'instructor' ? 'Liam Instructor' : 'Administrator')}
                   </p>
                   <p className="text-[11px] text-muted-foreground truncate">
-                    {currentUser?.email || 'admin@admin.com'}
+                    {currentUser?.email || (activeRole === 'instructor' ? 'instructor@mentor.com' : 'admin@mentor.com')}
                   </p>
-                  <span className="mt-1 inline-block rounded-md bg-[#007867]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#007867] uppercase">
+                  <span className="mt-1 inline-block rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary uppercase">
                     {activeRole}
                   </span>
                 </div>
@@ -522,10 +584,29 @@ export default function DashboardLayout({
                     <Globe className="mr-2 h-4 w-4" /> Visit Public Site
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/student/dashboard" className="cursor-pointer text-xs font-medium text-emerald-600">
+                    <GraduationCap className="mr-2 h-4 w-4" /> Student Portal
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    const nextRole = activeRole === 'instructor' ? 'admin' : 'instructor'
+                    setStoredRole(nextRole)
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('dashboard_role', nextRole)
+                    }
+                    router.refresh()
+                  }}
+                  className="cursor-pointer text-xs font-medium"
+                >
+                  <UserCheck className="mr-2 h-4 w-4" /> Switch to {activeRole === 'instructor' ? 'Admin' : 'Instructor'} View
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className="cursor-pointer text-xs font-medium text-destructive focus:text-destructive"
+                  className="cursor-pointer text-xs font-medium text-destructive"
                 >
                   <LogOut className="mr-2 h-4 w-4" /> Sign Out
                 </DropdownMenuItem>

@@ -55,7 +55,7 @@ export default function CategoryCard({
     >
       <Card
         className={cn(
-          'flex flex-col justify-between h-full rounded-2xl border p-5 transition-all duration-300 !shadow-none hover:!shadow-card hover:-translate-y-1',
+          'flex flex-col justify-between h-full rounded-2xl border p-5 transition-all duration-300 shadow-none! hover:shadow-card! hover:-translate-y-1',
           className
         )}
         style={{
@@ -68,7 +68,7 @@ export default function CategoryCard({
             <IconComponent className="h-7 w-7" />
           </div>
 
-          <p className="mt-4 mb-4 text-xl font-semibold text-foreground line-clamp-2 min-h-[3.5rem]">
+          <p className="mt-4 mb-4 text-xl font-semibold text-foreground line-clamp-2 min-h-14">
             {category.title}
           </p>
         </div>

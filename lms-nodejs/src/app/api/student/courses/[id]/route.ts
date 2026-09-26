@@ -29,7 +29,7 @@ export async function GET(
     }
 
     // Verify student is enrolled (admins and instructors bypass)
-    let enrollment = db.prepare(`
+    const enrollment = db.prepare(`
       SELECT * FROM course_enrollments WHERE course_id = ? AND user_id = ?
     `).get(courseId, user.id) as any
 

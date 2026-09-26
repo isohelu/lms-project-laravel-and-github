@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   FileText,
@@ -67,6 +67,34 @@ const INITIAL_POSTS: BlogPost[] = [
 export default function AdminBlogsPage() {
   const [posts, setPosts] = useState<BlogPost[]>(INITIAL_POSTS)
   const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    async function loadBlogs() {
+      try {
+        const res = await fetch('/api/blogs')
+        if (res.ok) {
+          const json = await res.json()
+          const list = json.blogs || json.posts || json.data
+          if (Array.isArray(list) && list.length > 0) {
+            const mapped: BlogPost[] = list.map((b: any, idx: number) => ({
+              id: b.id || idx + 1,
+              title: b.title || b.name,
+              slug: b.slug || '',
+              category: b.category?.name || b.category || 'General',
+              author: b.author?.name || b.author || 'Instructor',
+              views: b.views || b.view_count || 120,
+              publishedAt: b.created_at ? new Date(b.created_at).toLocaleDateString() : 'Recent',
+              status: b.status === 1 || b.status === 'published' ? 'Published' : 'Draft',
+            }))
+            setPosts(mapped)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load blogs from API:', err)
+      }
+    }
+    loadBlogs()
+  }, [])
 
   const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this blog post?')) {

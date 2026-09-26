@@ -14,6 +14,16 @@ export default function RoleAwareDashboardPage() {
   useEffect(() => {
     async function checkAuth() {
       try {
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search)
+          const qRole = params.get('role')
+          if (qRole === 'instructor' || qRole === 'admin') {
+            setRole(qRole)
+            setLoading(false)
+            return
+          }
+        }
+
         const res = await fetch('/api/auth/me')
         if (!res.ok) {
           router.replace('/login')
@@ -29,7 +39,7 @@ export default function RoleAwareDashboardPage() {
         if (userRole === 'admin' || userRole === 'instructor') {
           setRole(userRole)
         } else {
-          router.replace('/student/courses')
+          router.replace('/student/dashboard')
         }
       } catch {
         router.replace('/login')

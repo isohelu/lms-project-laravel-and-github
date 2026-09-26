@@ -11,22 +11,20 @@ export interface StatCardProps {
   iconBgClass?: string
 }
 
-export default function StatCard({ title, value, icon, iconBgClass = 'bg-slate-100' }: StatCardProps) {
+export default function StatCard({
+  title,
+  value,
+  icon,
+  iconBgClass = 'bg-gray-100 dark:bg-muted',
+}: StatCardProps) {
   return (
-    <Card className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs transition-all duration-200 hover:shadow-sm">
+    <Card className="p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <h4 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            {value}
-          </h4>
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <h4 className="mt-1 text-2xl font-semibold text-foreground">{value}</h4>
         </div>
-        <div
-          className={cn(
-            'flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform duration-200 hover:scale-105',
-            iconBgClass
-          )}
-        >
+        <div className={cn('rounded-full p-3 flex items-center justify-center', iconBgClass)}>
           {icon}
         </div>
       </div>

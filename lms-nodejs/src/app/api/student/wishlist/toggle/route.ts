@@ -10,7 +10,7 @@ const toggleSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await requireRole(['student', 'admin'])
+    const user = await requireRole(['student', 'admin', 'instructor'])
     const body = await req.json()
     const parsed = toggleSchema.safeParse(body)
 

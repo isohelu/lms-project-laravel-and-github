@@ -168,6 +168,32 @@ function ExamAttemptRunner({
     startAttempt()
   }, [examId])
 
+  const handleSubmitExam = async () => {
+    setSubmitting(true)
+    let finalAttemptId = attemptId
+    try {
+      const res = await fetch(`/api/student/exams/${examId}/attempt/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          attemptId,
+          answers,
+          timeSpentSeconds: 1800 - timeLeft,
+        }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.attemptId) finalAttemptId = data.attemptId
+      }
+    } catch (err) {
+      console.error('Submit error:', err)
+    } finally {
+      setSubmitting(false)
+      setShowConfirmSubmit(false)
+      router.push(`/student/exams/${examId}/result${finalAttemptId ? `?attempt_id=${finalAttemptId}` : ''}`)
+    }
+  }
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -218,31 +244,6 @@ function ExamAttemptRunner({
     })
   }
 
-  const handleSubmitExam = async () => {
-    setSubmitting(true)
-    let finalAttemptId = attemptId
-    try {
-      const res = await fetch(`/api/student/exams/${examId}/attempt/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          attemptId,
-          answers,
-          timeSpentSeconds: 1800 - timeLeft,
-        }),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        if (data.attemptId) finalAttemptId = data.attemptId
-      }
-    } catch (err) {
-      console.error('Submit error:', err)
-    } finally {
-      setSubmitting(false)
-      setShowConfirmSubmit(false)
-      router.push(`/student/exams/${examId}/result${finalAttemptId ? `?attempt_id=${finalAttemptId}` : ''}`)
-    }
-  }
 
   const answeredCount = Object.keys(answers).filter(
     (k) => answers[Number(k)] !== undefined && answers[Number(k)] !== ''
@@ -258,7 +259,7 @@ function ExamAttemptRunner({
               <ArrowLeft className="h-4 w-4" />
               Exit Exam
             </Button>
-            <div className="h-4 w-[1px] bg-border" />
+            <div className="h-4 w-px bg-border" />
             <h1 className="text-sm font-semibold text-foreground truncate max-w-sm sm:max-w-md">
               {examTitle}
             </h1>

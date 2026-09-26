@@ -3,6 +3,7 @@
 import React, { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Breadcrumbs from '@/components/breadcrumbs'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -283,24 +284,16 @@ export default function DashboardSettingsTabRoute({
   return (
     <DashboardLayout role={userRole === 'instructor' ? 'instructor' : 'admin'}>
       <div className="space-y-6 max-w-5xl mx-auto">
-        {/* Header Breadcrumb */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-              <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-              <span>/</span>
-              <span className="text-foreground font-medium">Settings</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              {userRole === 'instructor' ? 'Account Settings' : 'Global Settings'}
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              {userRole === 'instructor'
-                ? 'Manage your instructor profile, credentials, and public representation.'
-                : 'Manage platform identity, third-party credentials, storage, and notifications.'}
-            </p>
-          </div>
-        </div>
+        {/* Header Breadcrumbs */}
+        <Breadcrumbs
+          title={userRole === 'instructor' ? 'Account Settings' : 'Settings'}
+          breadcrumbs={[
+            { title: 'Dashboard', href: '/dashboard' },
+            { title: 'Settings' },
+            { title: visibleTabs.find((t) => t.id === activeTab)?.label || 'System' },
+          ]}
+          className="mb-4"
+        />
 
         {/* Tab Navigation Ribbon */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-border/60 scrollbar-none">

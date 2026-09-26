@@ -2,40 +2,57 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import {
-  ShoppingBag,
-  PlusCircle,
-  Search,
-  Eye,
-  Edit,
-  Trash2,
-  Loader2,
-  DollarSign,
-  Package
-} from 'lucide-react'
+import { Plus, ArrowUpDown, Eye, Loader2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import Breadcrumbs from '@/components/breadcrumbs'
+import TableFilter from '@/components/table/table-filter'
+import TableFooter from '@/components/table/table-footer'
+import ActionsDropdown from '@/components/actions-dropdown'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { toast } from 'sonner'
 
 export default function DashboardManageProductsPage() {
   const [products, setProducts] = useState<any[]>([])
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [sortField, setSortField] = useState<'instructor' | 'title' | null>(null)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   const loadProducts = async () => {
     try {
       setLoading(true)
-      const res = await fetch('/api/instructor/products')
+      const queryParams = new URLSearchParams({
+        page: String(currentPage),
+        limit: String(pageSize),
+        status: 'all',
+      })
+      if (search.trim()) {
+        queryParams.set('search', search.trim())
+      }
+
+      const res = await fetch(`/api/products?${queryParams.toString()}`)
       if (res.ok) {
         const data = await res.json()
         if (data.products) {
           setProducts(data.products)
+          setTotal(data.total || 0)
         }
       }
     } catch (err) {
       console.error('Error fetching products:', err)
+      toast.error('Failed to load products')
     } finally {
       setLoading(false)
     }
@@ -43,125 +60,247 @@ export default function DashboardManageProductsPage() {
 
   useEffect(() => {
     loadProducts()
-  }, [])
+  }, [currentPage, pageSize, search])
 
-  const filtered = products.filter((p) =>
-    p.title && p.title.toLowerCase().includes(search.toLowerCase())
-  )
+  const handleDeleteProduct = async (productId: number) => {
+    try {
+      const res = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        toast.success('Product deleted successfully')
+        loadProducts()
+      } else {
+        toast.error(data.message || 'Failed to delete product')
+      }
+    } catch (err) {
+      console.error('Failed to delete product:', err)
+      toast.error('Failed to delete product')
+    }
+  }
+
+  const toggleSort = (field: 'instructor' | 'title') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortOrder('asc')
+    }
+  }
+
+  const sortedProducts = [...products].sort((a, b) => {
+    if (!sortField) return 0
+    if (sortField === 'instructor') {
+      const nameA = (a.instructor_name || '').toLowerCase()
+      const nameB = (b.instructor_name || '').toLowerCase()
+      return sortOrder === 'asc'
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA)
+    }
+    if (sortField === 'title') {
+      const titleA = (a.title || '').toLowerCase()
+      const titleB = (b.title || '').toLowerCase()
+      return sortOrder === 'asc'
+        ? titleA.localeCompare(titleB)
+        : titleB.localeCompare(titleA)
+    }
+    return 0
+  })
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumbs & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-              <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-              <span>/</span>
-              <span className="text-foreground font-medium">Store</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Manage Products</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Manage digital store inventory, downloadable assets, e-books, and starter templates.
-            </p>
-          </div>
-
-          <Button asChild className="rounded-xl font-semibold gap-2 shadow-xs bg-[#007867] hover:bg-[#007867]/90 text-white">
+      <Breadcrumbs
+        title="Products"
+        breadcrumbs={[
+          { title: 'Dashboard', href: '/dashboard' },
+          { title: 'Products' },
+        ]}
+        action={
+          <Button asChild className="h-9 px-4">
             <Link href="/dashboard/store/products/create">
-              <PlusCircle className="h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Create Product
             </Link>
           </Button>
-        </div>
+        }
+        className="mb-4"
+      />
 
-        {/* Search */}
-        <Card className="p-4 border-slate-200/80 shadow-xs">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search product title..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 text-xs bg-background"
-            />
-          </div>
-        </Card>
+      <Card>
+        <TableFilter
+          title="Products"
+          search={search}
+          onSearchChange={(val) => {
+            setSearch(val)
+            setCurrentPage(1)
+          }}
+          pageSize={pageSize}
+          onPageSizeChange={(val) => {
+            setPageSize(val)
+            setCurrentPage(1)
+          }}
+          tablePageSizes={[10, 15, 20, 25]}
+        />
 
-        {/* Products Table */}
-        <Card className="border-slate-200/80 shadow-xs overflow-hidden">
-          {loading ? (
-            <div className="py-20 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-[#007867] mx-auto mb-2" />
-              <p className="text-xs text-muted-foreground font-medium">Loading store products...</p>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="p-16 text-center">
-              <Package className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-foreground">No digital products found</p>
-              <p className="text-xs text-muted-foreground mt-1 mb-4">Add digital templates, assets, or software files.</p>
-              <Button asChild size="sm" className="bg-[#007867] hover:bg-[#007867]/90 text-white">
-                <Link href="/dashboard/store/products/create">Create Product</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-500 uppercase tracking-wider font-semibold">
-                    <th className="py-3 px-4">Product</th>
-                    <th className="py-3 px-4">Price</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filtered.map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/60 flex items-center justify-center text-slate-400">
-                            {item.thumbnail ? (
-                              <img src={item.thumbnail} alt="" className="h-full w-full object-cover" />
-                            ) : (
-                              <Package className="h-5 w-5 text-slate-400" />
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-foreground line-clamp-1">{item.title}</p>
-                            <p className="text-[11px] text-muted-foreground">ID: #{item.id}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 font-semibold text-foreground">
-                        {item.price ? `$${item.price}` : 'Free'}
-                      </td>
-                      <td className="py-3 px-4 text-muted-foreground">
-                        {item.category?.name || item.category || 'General'}
-                      </td>
-                      <td className="py-3 px-4">
-                        <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[11px]">
-                          {item.status || 'Active'}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                            <Link href={`/products/${item.slug || item.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-      </div>
+        <Table className="border-y border-border">
+          <TableHeader>
+            <TableRow>
+              {/* Instructor */}
+              <TableHead>
+                <div className="flex items-center pl-1">
+                  <Button
+                    variant="ghost"
+                    className="p-0 hover:bg-transparent font-semibold"
+                    onClick={() => toggleSort('instructor')}
+                  >
+                    Instructor
+                    <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </TableHead>
+
+              {/* Title */}
+              <TableHead className="font-semibold">
+                <Button
+                  variant="ghost"
+                  className="p-0 hover:bg-transparent font-semibold"
+                  onClick={() => toggleSort('title')}
+                >
+                  Title
+                  <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
+                </Button>
+              </TableHead>
+
+              {/* Status */}
+              <TableHead className="text-center font-semibold">Status</TableHead>
+
+              {/* Category */}
+              <TableHead className="text-center font-semibold">Category</TableHead>
+
+              {/* Price */}
+              <TableHead className="text-center font-semibold">Price</TableHead>
+
+              {/* Orders */}
+              <TableHead className="text-center font-semibold">Orders</TableHead>
+
+              {/* Actions */}
+              <TableHead className="pr-4 text-end font-semibold">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-32 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span className="text-muted-foreground text-sm">Loading products...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : sortedProducts.length > 0 ? (
+              sortedProducts.map((product) => {
+                const discountPrice = product.discount_price ? Number(product.discount_price) : null
+                const price = product.price ? Number(product.price) : 0
+                const displayPrice = discountPrice || price
+
+                return (
+                  <TableRow key={product.id}>
+                    {/* Instructor */}
+                    <TableCell className="py-3">
+                      <div className="pl-4">
+                        <p className="mb-0.5 text-base font-medium">
+                          {product.instructor_name || 'Admin Instructor'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {product.instructor_email || 'instructor@example.com'}
+                        </p>
+                      </div>
+                    </TableCell>
+
+                    {/* Title */}
+                    <TableCell className="py-3">
+                      <div className="py-1">
+                        <Link
+                          href={`/dashboard/store/products/${product.id}`}
+                          className="font-medium hover:underline text-foreground"
+                        >
+                          {product.title}
+                        </Link>
+                      </div>
+                    </TableCell>
+
+                    {/* Status */}
+                    <TableCell className="py-3 text-center capitalize text-sm">
+                      {product.status || 'draft'}
+                    </TableCell>
+
+                    {/* Category */}
+                    <TableCell className="py-3 text-center capitalize text-sm">
+                      <p>{product.category_title || '--'}</p>
+                    </TableCell>
+
+                    {/* Price */}
+                    <TableCell className="py-3 text-center text-sm">
+                      <p>
+                        {product.pricing_type === 'paid' && displayPrice > 0
+                          ? `$${displayPrice.toFixed(2)}`
+                          : 'Free'}
+                      </p>
+                    </TableCell>
+
+                    {/* Orders */}
+                    <TableCell className="py-3 text-center text-sm">
+                      <div className="flex items-center justify-center gap-1">
+                        <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span>{product.orders_count || 0}</span>
+                      </div>
+                    </TableCell>
+
+                    {/* Actions */}
+                    <TableCell className="py-3">
+                      <div className="flex justify-end pr-4">
+                        <ActionsDropdown
+                          className="max-w-36"
+                          routes={[
+                            {
+                              label: 'Edit',
+                              method: 'get',
+                              route: `/dashboard/store/products/${product.id}`,
+                            },
+                            {
+                              label: 'Delete',
+                              method: 'delete',
+                              route: `/api/products/${product.id}`,
+                              message: 'This product will be permanently deleted.',
+                            },
+                          ]}
+                          onDeleteSuccess={loadProducts}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                  No products found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        <TableFooter
+          className="p-0 py-5 sm:p-7"
+          currentPage={currentPage}
+          total={total}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+        />
+      </Card>
     </DashboardLayout>
   )
 }

@@ -151,7 +151,7 @@ export default function MobileMenuDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-[260px] flex-col gap-0 p-0 sm:max-w-sm"
+        className="flex w-65 flex-col gap-0 p-0 sm:max-w-sm"
       >
         <SheetHeader className="border-b border-border px-6 py-4 text-left">
           <SheetTitle className="text-base font-semibold text-foreground">Menu</SheetTitle>

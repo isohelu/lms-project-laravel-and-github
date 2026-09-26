@@ -12,6 +12,7 @@ import {
   Layout,
   Globe
 } from 'lucide-react'
+import Breadcrumbs from '@/components/breadcrumbs'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -43,17 +44,14 @@ export default function DashboardFrontendPagesPage() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-            <span>/</span>
-            <span className="text-foreground font-medium">Frontend Pages</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Frontend Page Manager</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Manage landing page layout variations, custom inner content pages, and legal policies.
-          </p>
-        </div>
+        <Breadcrumbs
+          title="Pages"
+          breadcrumbs={[
+            { title: 'Dashboard', href: '/dashboard' },
+            { title: 'Frontend Pages' },
+          ]}
+          className="mb-4"
+        />
 
         {/* Home Pages Section */}
         <div className="space-y-4">
@@ -72,7 +70,7 @@ export default function DashboardFrontendPagesPage() {
                   key={page.id}
                   className={`p-5 border shadow-xs transition-all flex flex-col justify-between ${
                     isSelected
-                      ? 'border-[#007867] ring-1 ring-[#007867]/30 bg-[#007867]/[0.02]'
+                      ? 'border-[#007867] ring-1 ring-[#007867]/30 bg-[#007867]/2'
                       : 'border-slate-200/80 hover:border-slate-300'
                   }`}
                 >

@@ -58,12 +58,12 @@ export default function CourseStatusChart({
   }, [pieChartData])
 
   return (
-    <Card className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs sm:p-6">
-      <h3 className="mb-4 text-lg font-medium text-slate-900 tracking-tight">
+    <Card className="rounded-xl border border-border/60 bg-card p-6 shadow-xs">
+      <h3 className="mb-4 text-lg font-medium text-foreground">
         {title}
       </h3>
 
-      <div className="flex h-[300px] w-full items-center justify-center">
+      <div className="flex h-75 w-full items-center justify-center">
         {mounted ? (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>

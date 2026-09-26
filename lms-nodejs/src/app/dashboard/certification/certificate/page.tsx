@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Breadcrumbs from '@/components/breadcrumbs'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -149,24 +150,23 @@ export default function CertificateTemplatesPage() {
     <DashboardLayout role="admin">
       <div className="space-y-6">
         {/* Header Breadcrumbs */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-              <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-              <span>/</span>
-              <span className="text-foreground font-medium">Certificate Templates</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Certificates</h1>
-            <p className="text-xs text-muted-foreground">Design and manage course and examination credentials.</p>
-          </div>
-          <Button
-            onClick={() => setCreateOpen(true)}
-            className="bg-[#007867] hover:bg-[#007867]/90 text-white font-medium text-xs h-9 px-4 gap-2 rounded-xl"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Create Template</span>
-          </Button>
-        </div>
+        <Breadcrumbs
+          title="Certificates"
+          breadcrumbs={[
+            { title: 'Dashboard', href: '/dashboard' },
+            { title: 'Certificate Templates' },
+          ]}
+          action={
+            <Button
+              onClick={() => setCreateOpen(true)}
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create Template</span>
+            </Button>
+          }
+          className="mb-4"
+        />
 
         {loading ? (
           <div className="py-20 flex justify-center">

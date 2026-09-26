@@ -99,30 +99,30 @@ export default function InstructorDashboardView() {
     <DashboardLayout role="instructor">
       <div className="space-y-7">
         {/* 1. Statistics Cards Row (4 cards for instructor) */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Courses"
             value={data.statistics.courses}
-            icon={<BookOpen className="h-6 w-6 text-[#0284c7]" />}
-            iconBgClass="bg-[#e0f2fe]"
+            icon={<BookOpen className="h-5 w-5 text-blue-500" />}
+            iconBgClass="bg-blue-50 dark:bg-blue-950/40"
           />
           <StatCard
             title="Lessons"
             value={data.statistics.lessons}
-            icon={<Video className="h-6 w-6 text-[#16a34a]" />}
-            iconBgClass="bg-[#dcfce7]"
+            icon={<Video className="h-5 w-5 text-green-500" />}
+            iconBgClass="bg-green-50 dark:bg-green-950/40"
           />
           <StatCard
             title="Enrollment"
             value={data.statistics.enrollments}
-            icon={<UserCheck className="h-6 w-6 text-[#ea580c]" />}
-            iconBgClass="bg-[#ffedd5]"
+            icon={<UserCheck className="h-5 w-5 text-amber-500" />}
+            iconBgClass="bg-amber-50 dark:bg-amber-950/40"
           />
           <StatCard
             title="Students"
             value={data.statistics.students}
-            icon={<Users className="h-6 w-6 text-[#9333ea]" />}
-            iconBgClass="bg-[#f3e8ff]"
+            icon={<Users className="h-5 w-5 text-purple-500" />}
+            iconBgClass="bg-purple-50 dark:bg-purple-950/40"
           />
         </div>
 

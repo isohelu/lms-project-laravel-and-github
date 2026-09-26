@@ -28,7 +28,7 @@ export default function Faqs() {
             <img
               src="/assets/images/intro/home-1/faqs.png"
               alt="Frequently Asked Questions"
-              className="mx-auto mt-6 max-w-[268px] object-contain"
+              className="mx-auto mt-6 max-w-67 object-contain"
             />
           </div>
 
@@ -53,8 +53,8 @@ export default function Faqs() {
           </Accordion>
         </div>
 
-        <div className="after:pointer-events-none after:absolute after:top-0 after:left-0 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(0,167,111,1)] after:blur-[290px] after:content-['']" />
-        <div className="after:pointer-events-none after:absolute after:top-1/2 after:right-20 after:h-[290px] after:w-[290px] after:-translate-y-1/2 after:rounded-full after:bg-[rgba(97,95,255,1)] after:blur-[290px] after:content-['']" />
+        <div className="after:pointer-events-none after:absolute after:top-0 after:left-0 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(0,167,111,1)] after:blur-[290px] after:content-['']" />
+        <div className="after:pointer-events-none after:absolute after:top-1/2 after:right-20 after:h-72.5 after:w-72.5 after:-translate-y-1/2 after:rounded-full after:bg-[rgba(97,95,255,1)] after:blur-[290px] after:content-['']" />
       </section>
     </div>
   )

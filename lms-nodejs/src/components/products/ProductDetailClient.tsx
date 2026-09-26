@@ -78,7 +78,7 @@ export default function ProductDetailClient({ product }: { product: ProductItem 
     setDownloadNotice(`Preparing download for ${file.name}...`)
     // Attempt download through gated download endpoint if file id exists
     if (file.id) {
-      window.location.href = `/api/products/${product.id}/download/${file.id}`
+      window.location.assign(`/api/products/${product.id}/download/${file.id}`)
     }
     setTimeout(() => setDownloadNotice(null), 3500)
   }
@@ -129,7 +129,7 @@ export default function ProductDetailClient({ product }: { product: ProductItem 
     <div className="min-h-screen bg-background pb-20">
       {/* Role Switcher Pill Bar */}
       <div className="bg-muted/40 border-b border-border py-2 px-4">
-        <div className="container mx-auto max-w-[1280px] flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="container mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-muted-foreground">User View:</span>
             <span className="capitalize font-bold text-primary">
@@ -157,7 +157,7 @@ export default function ProductDetailClient({ product }: { product: ProductItem 
         </div>
       </div>
 
-      <div className="container mx-auto max-w-[1280px] px-4 md:px-6 py-6">
+      <div className="container mx-auto max-w-7xl px-4 md:px-6 py-6">
         {/* Breadcrumb matching Laravel */}
         <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
           <Link href="/" className="hover:text-foreground flex items-center gap-1 transition-colors">
@@ -185,7 +185,7 @@ export default function ProductDetailClient({ product }: { product: ProductItem 
 
         {/* Purchase Confirmation Toast Banner */}
         {purchaseSuccess && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-700 dark:text-emerald-400">
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500">
             <CheckCircle2 className="h-5 w-5 shrink-0" />
             <div>
               <p className="font-semibold text-sm">Purchase successful!</p>
@@ -206,7 +206,7 @@ export default function ProductDetailClient({ product }: { product: ProductItem 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-start">
           {/* Left: Gallery */}
           <div>
-            <div className="relative h-[380px] overflow-hidden rounded-xl bg-muted border border-border">
+            <div className="relative h-95 overflow-hidden rounded-xl bg-muted border border-border">
               <img
                 src={activeImage}
                 alt={product.title}
@@ -278,7 +278,7 @@ export default function ProductDetailClient({ product }: { product: ProductItem 
             {/* USER-WISE CONDITIONAL ACTIONS */}
             {isOwned ? (
               <div className="space-y-4">
-                <div className="flex items-center gap-2 rounded-lg border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-4 py-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                <div className="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-500">
                   <CheckCircle2 className="h-5 w-5" />
                   <span>You own this product</span>
                 </div>
@@ -484,7 +484,7 @@ export default function ProductDetailClient({ product }: { product: ProductItem 
                       value={reviewText}
                       onChange={(e) => setReviewText(e.target.value)}
                       placeholder="Share your feedback about the design tokens, architecture, or documentation..."
-                      className="w-full rounded-md border border-border bg-background p-3 text-sm text-foreground focus:border-primary focus:outline-hidden"
+                      className="w-full rounded-md border border-border bg-background p-3 text-sm text-foreground focus:ring-1 focus:ring-primary focus:outline-hidden"
                       required
                     />
 

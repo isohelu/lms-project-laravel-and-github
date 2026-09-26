@@ -21,7 +21,7 @@ export default function ButtonGradientPrimary({
       {shadow && (
         <div
           className={cn(
-            "after:pointer-events-none after:absolute after:top-1/2 after:-left-7 after:h-[84px] after:w-[84px] after:-translate-y-1/2 after:rounded-full after:bg-[#E4CBA8A6] after:blur-[30px] after:content-[''] dark:after:bg-[#e4cba857]",
+            'btn-gradient-glow',
             shadowClass
           )}
         />
@@ -29,7 +29,7 @@ export default function ButtonGradientPrimary({
 
       <Button
         className={cn(
-          'relative z-10 h-auto bg-gradient-to-r from-primary to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white px-5 py-2.5 shadow-none transition-all',
+          'relative z-10 h-auto bg-linear-to-r from-primary to-primary-800 hover:from-primary-700 hover:to-primary-900 text-white px-5 py-2.5 shadow-none transition-all',
           className
         )}
         {...props}

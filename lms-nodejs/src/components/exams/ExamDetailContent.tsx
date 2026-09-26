@@ -71,7 +71,7 @@ export default function ExamDetailContent({ slug }: { slug: string }) {
       })
 
       if (res.status === 401) {
-        window.location.href = `/login?redirect=/exams/${slug}`
+        window.location.assign(`/login?redirect=/exams/${slug}`)
         return
       }
 
@@ -104,7 +104,7 @@ export default function ExamDetailContent({ slug }: { slug: string }) {
     <div className="min-h-screen bg-background pb-24">
       {/* Hero Header */}
       <section className="border-b border-border bg-muted/40 py-12">
-        <div className="container mx-auto px-4 max-w-[1280px]">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground">
               Home
@@ -198,7 +198,7 @@ export default function ExamDetailContent({ slug }: { slug: string }) {
                     <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
                       <Award className="mx-auto mb-2 h-7 w-7 text-emerald-600 dark:text-emerald-400" />
                       <p className="font-bold text-sm text-emerald-800 dark:text-emerald-300">
-                        You're enrolled!
+                        You&apos;re enrolled!
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Unlimited practice attempts and verified certificate unlocked.
@@ -265,7 +265,7 @@ export default function ExamDetailContent({ slug }: { slug: string }) {
       </section>
 
       {/* Main Tabs Details */}
-      <div className="container mx-auto px-4 max-w-[1280px] py-12">
+      <div className="container mx-auto px-4 max-w-7xl py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8 space-y-8">
             <div className="border-b border-border">
@@ -312,7 +312,7 @@ export default function ExamDetailContent({ slug }: { slug: string }) {
             {activeTab === 'syllabus' && (
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-foreground">Knowledge Domains & Topics</h3>
-                <div className="rounded-xl border border-border divide-y divide-border">
+                <div className="rounded-xl border divide-y divide-border">
                   <div className="p-4">
                     <h4 className="font-bold text-foreground text-sm">
                       Domain 1: Core Fundamentals & Protocols (30%)

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import CartDrawer from '@/components/cart/CartDrawer'
+import { Toaster } from 'sonner'
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -29,11 +30,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     pathname.includes('/learn')
 
   if (isDashboardRoute || isAuthRoute || isPlayerRoute) {
-    return <main className="flex-1 min-h-screen">{children}</main>
+    return (
+      <main className="flex-1 min-h-screen">
+        <Toaster position="top-right" richColors />
+        {children}
+      </main>
+    )
   }
 
   return (
     <>
+      <Toaster position="top-right" richColors />
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
@@ -41,3 +48,4 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     </>
   )
 }
+

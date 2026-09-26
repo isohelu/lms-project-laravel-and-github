@@ -20,6 +20,8 @@ export interface ExamRecord {
   total_questions?: number
   thumbnail?: string | null
   banner?: string | null
+  expiry_type?: string
+  expiry_duration?: string | null
   instructor_id?: number
   exam_category_id?: number
   created_at?: string
@@ -27,8 +29,10 @@ export interface ExamRecord {
   // Virtual / joined fields
   category_title?: string
   instructor_name?: string
+  instructor_email?: string
   instructor_photo?: string
   enrollments_count?: number
+  attempts_count?: number
 }
 
 export interface ExamQuestionRecord {
@@ -114,8 +118,9 @@ export const examRepository = {
               e.pricing_type, e.thumbnail, e.short_description, e.status, e.created_at,
               e.duration_hours, e.duration_minutes, e.pass_mark, e.total_marks, e.max_attempts, e.total_questions,
               cat.title as category_title,
-              u.name as instructor_name, u.photo as instructor_photo,
-              (SELECT COUNT(*) FROM exam_enrollments en WHERE en.exam_id = e.id) as enrollments_count
+              u.name as instructor_name, u.email as instructor_email, u.photo as instructor_photo,
+              (SELECT COUNT(*) FROM exam_enrollments en WHERE en.exam_id = e.id) as enrollments_count,
+              (SELECT COUNT(*) FROM exam_attempts ea WHERE ea.exam_id = e.id) as attempts_count
        FROM exams e
        LEFT JOIN exam_categories cat ON e.exam_category_id = cat.id
        LEFT JOIN instructors ins ON e.instructor_id = ins.id
@@ -326,11 +331,11 @@ export const examRepository = {
       INSERT INTO exams (
         title, slug, thumbnail, level, duration_hours, duration_minutes, pass_mark, total_marks,
         max_attempts, total_questions, price, discount, discount_price, pricing_type, status,
-        short_description, description, instructor_id, exam_category_id, created_at, updated_at
+        short_description, description, instructor_id, exam_category_id, expiry_type, expiry_duration, created_at, updated_at
       ) VALUES (
         @title, @slug, @thumbnail, @level, @duration_hours, @duration_minutes, @pass_mark, @total_marks,
         @max_attempts, @total_questions, @price, @discount, @discount_price, @pricing_type, @status,
-        @short_description, @description, @instructor_id, @exam_category_id, datetime('now'), datetime('now')
+        @short_description, @description, @instructor_id, @exam_category_id, @expiry_type, @expiry_duration, datetime('now'), datetime('now')
       )
     `)
     const result = stmt.run({
@@ -353,6 +358,8 @@ export const examRepository = {
       description: exam.description || null,
       instructor_id: exam.instructor_id || 1,
       exam_category_id: exam.exam_category_id || 1,
+      expiry_type: exam.expiry_type || 'lifetime',
+      expiry_duration: exam.expiry_duration || null,
     })
     return Number(result.lastInsertRowid)
   },
@@ -361,16 +368,20 @@ export const examRepository = {
     const fields: string[] = []
     const params: Record<string, unknown> = { id }
 
-    const updatableKeys: (keyof ExamRecord)[] = [
+    const updatableKeys = [
       'title', 'slug', 'level', 'pricing_type', 'price', 'discount', 'discount_price',
       'thumbnail', 'banner', 'short_description', 'description', 'status',
-      'duration_hours', 'duration_minutes', 'pass_mark', 'total_marks', 'max_attempts', 'total_questions'
+      'duration_hours', 'duration_minutes', 'pass_mark', 'total_marks', 'max_attempts', 'total_questions',
+      'expiry_type', 'expiry_duration', 'meta_title', 'meta_keywords', 'meta_description',
+      'og_title', 'og_description', 'exam_category_id'
     ]
 
     for (const key of updatableKeys) {
-      if (exam[key] !== undefined) {
-        fields.push(`${String(key)} = @${String(key)}`)
-        params[key] = exam[key]
+      if ((exam as Record<string, unknown>)[key] !== undefined) {
+        fields.push(`${key} = @${key}`)
+        let val = (exam as Record<string, unknown>)[key]
+        if (typeof val === 'boolean') val = val ? 1 : 0
+        params[key] = val
       }
     }
 

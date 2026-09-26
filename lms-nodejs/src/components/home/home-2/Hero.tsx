@@ -48,18 +48,18 @@ export default function Home2Hero({ heroSection }: Home2HeroProps) {
             </div>
 
             <div className="relative">
-              <form onSubmit={handleSearch} className="z-10 w-full max-w-[440px]">
+              <form onSubmit={handleSearch} className="z-10 w-full max-w-110">
                 <SearchInput
                   placeholder="Search for courses that fit your goals"
                   onChangeValue={(val) => setSearchValue(val)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleSearch(e)
                   }}
-                  className="z-10 w-full rounded bg-background md:max-w-[440px] [&>input]:h-11 shadow-sm"
+                  className="z-10 w-full rounded bg-background md:max-w-110 [&>input]:h-11 shadow-sm"
                 />
               </form>
 
-              <div className="after:pointer-events-none after:absolute after:top-1/2 after:-left-[60px] after:h-[240px] after:w-[240px] after:-translate-y-1/2 after:rounded-full after:bg-[rgba(0,167,111,0.25)] after:blur-[120px] after:content-['']"></div>
+              <div className="after:pointer-events-none after:absolute after:top-1/2 after:-left-15 after:h-60 after:w-60 after:-translate-y-1/2 after:rounded-full after:bg-[rgba(0,167,111,0.25)] after:blur-[120px] after:content-['']"></div>
             </div>
           </div>
 
@@ -67,10 +67,10 @@ export default function Home2Hero({ heroSection }: Home2HeroProps) {
             <img
               src={thumbnail}
               alt="Student learning online"
-              className="relative z-10 h-full max-h-[460px] object-contain drop-shadow-xl"
+              className="relative z-10 h-full max-h-115 object-contain drop-shadow-xl"
             />
 
-            <div className="after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(97,95,255,0.25)] after:blur-[120px] after:content-['']"></div>
+            <div className="after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(97,95,255,0.25)] after:blur-[120px] after:content-['']"></div>
           </div>
         </div>
       </div>

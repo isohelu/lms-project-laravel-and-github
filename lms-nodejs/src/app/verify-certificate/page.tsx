@@ -116,7 +116,7 @@ export default function VerifyCertificatePage() {
           {status === 'valid' && certData && (
             <div className="mt-8 pt-6 border-t border-border space-y-5 animate-in fade-in duration-300">
               <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400">
-                <CheckCircle2 className="h-6 w-6 flex-shrink-0" />
+                <CheckCircle2 className="h-6 w-6 shrink-0" />
                 <div>
                   <h4 className="font-bold text-sm">Official Record Verified</h4>
                   <p className="text-xs opacity-90">Credential is authentic and registered in the Mentor LMS ledger.</p>
@@ -162,7 +162,7 @@ export default function VerifyCertificatePage() {
           {status === 'invalid' && (
             <div className="mt-8 pt-6 border-t border-border space-y-4 animate-in fade-in duration-300">
               <div className="flex items-center gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive">
-                <AlertTriangle className="h-6 w-6 flex-shrink-0" />
+                <AlertTriangle className="h-6 w-6 shrink-0" />
                 <div>
                   <h4 className="font-bold text-sm">Certificate ID Not Found</h4>
                   <p className="text-xs opacity-90">

@@ -16,7 +16,7 @@ export default function Home3Hero() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-8">
           {/* Left Content */}
-          <div className="relative w-full space-y-8 md:max-w-[540px] lg:space-y-10">
+          <div className="relative w-full space-y-8 md:max-w-135 lg:space-y-10">
             <div className="relative z-10">
               <p className="mb-2 text-lg font-medium text-secondary-foreground">
                 Build Practical Future-Proof Skills
@@ -55,18 +55,18 @@ export default function Home3Hero() {
               ))}
             </div>
 
-            <div className="after:pointer-events-none after:absolute after:top-0 after:-right-20 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(97,95,255,0.2)] after:blur-[120px] after:content-['']"></div>
+            <div className="after:pointer-events-none after:absolute after:top-0 after:-right-20 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(97,95,255,0.2)] after:blur-[120px] after:content-['']"></div>
           </div>
 
           {/* Right Image */}
-          <div className="relative flex w-full max-w-[640px] items-center justify-center lg:justify-end">
+          <div className="relative flex w-full max-w-160 items-center justify-center lg:justify-end">
             <img
               src="/assets/images/intro/home-1/hero-image.png"
               alt="Student learning online"
               className="relative z-10 w-full object-contain drop-shadow-2xl"
             />
 
-            <div className="after:pointer-events-none after:absolute after:right-0 after:bottom-0 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(0,167,111,0.2)] after:blur-[120px] after:content-['']"></div>
+            <div className="after:pointer-events-none after:absolute after:right-0 after:bottom-0 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(0,167,111,0.2)] after:blur-[120px] after:content-['']"></div>
           </div>
         </div>
       </div>

@@ -1,183 +1,357 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Breadcrumbs from '@/components/breadcrumbs'
+import Combobox from '@/components/combobox'
+import InputError from '@/components/input-error'
+import LoadingButton from '@/components/loading-button'
+import { Editor } from '@/components/rich-editor'
 import {
-  FileText,
-  Save,
-  ArrowLeft,
-  Loader2,
-  CheckCircle2,
-  Image as ImageIcon
-} from 'lucide-react'
-import DashboardLayout from '@/components/layout/DashboardLayout'
-import { Button } from '@/components/ui/button'
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Card } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { toast } from 'sonner'
+import { Image as ImageIcon, AlertCircle, Loader2 } from 'lucide-react'
 
 export default function CreateBlogPage() {
   const router = useRouter()
-  const [title, setTitle] = useState('')
-  const [slug, setSlug] = useState('')
-  const [categoryId, setCategoryId] = useState('1')
-  const [categories, setCategories] = useState<any[]>([])
-  const [thumbnail, setThumbnail] = useState('')
-  const [description, setDescription] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [success, setSuccess] = useState(false)
+
+  const [categories, setCategories] = useState<{ label: string; value: string }[]>([
+    { label: 'Technology & AI', value: '1' },
+    { label: 'Design & UI/UX', value: '2' },
+    { label: 'Programming & Web Dev', value: '3' },
+    { label: 'Career & Growth', value: '4' },
+  ])
 
   useEffect(() => {
     fetch('/api/categories/blog')
-      .then(res => res.json())
-      .then(data => {
-        if (data.categories) setCategories(data.categories)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.categories && Array.isArray(data.categories)) {
+          setCategories(
+            data.categories.map((c: any) => ({
+              label: c.name || c.title,
+              value: String(c.id),
+            }))
+          )
+        }
       })
       .catch(() => {})
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title.trim() || !description.trim()) return
+  const [data, setData] = useState({
+    title: '',
+    categoryId: '',
+    status: 'draft',
+    keywords: '',
+    description: '',
+    thumbnail: '',
+  })
+
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null)
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
+  const [uploadingFile, setUploadingFile] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [processing, setProcessing] = useState(false)
+
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: (val: string | null) => void,
+    key?: 'thumbnail' | 'banner'
+  ) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const previewUrl = URL.createObjectURL(file)
+    setter(previewUrl)
+    setUploadingFile(true)
 
     try {
-      setSaving(true)
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('model_type', 'Modules\\Blog\\Models\\Blog')
+      formData.append('collection_name', key || 'banner')
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      const result = await res.json()
+      if (res.ok && result.success && result.url) {
+        if (key) {
+          setData((prev) => ({ ...prev, [key]: result.url }))
+        }
+      } else {
+        const reader = new FileReader()
+        reader.onload = () => {
+          const resultStr = reader.result as string
+          if (key) {
+            setData((prev) => ({ ...prev, [key]: resultStr }))
+          }
+        }
+        reader.readAsDataURL(file)
+      }
+    } catch {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const resultStr = reader.result as string
+        if (key) {
+          setData((prev) => ({ ...prev, [key]: resultStr }))
+        }
+      }
+      reader.readAsDataURL(file)
+    } finally {
+      setUploadingFile(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (uploadingFile) {
+      toast.info('Please wait while file is uploading...')
+      return
+    }
+
+    const newErrors: Record<string, string> = {}
+    if (!data.title.trim()) newErrors.title = 'Title is required.'
+    if (!data.description.trim()) newErrors.description = 'Description is required.'
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      toast.error('Please fill in the required fields.')
+      return
+    }
+
+    setProcessing(true)
+    setErrors({})
+    try {
       const res = await fetch('/api/blogs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: title.trim(),
-          slug: slug.trim() || title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-          category_id: categoryId,
-          thumbnail: thumbnail.trim(),
-          description: description.trim()
-        })
+          title: data.title,
+          category_id: data.categoryId,
+          status: data.status,
+          keywords: data.keywords,
+          description: data.description,
+          thumbnail: data.thumbnail || thumbnailPreview || null,
+        }),
       })
-      const data = await res.json()
-      if (data.success) {
-        setSuccess(true)
-        setTimeout(() => {
-          router.push('/dashboard/blogs')
-        }, 1200)
+      const result = await res.json()
+      if (res.ok && result.success) {
+        toast.success(result.message || 'Blog post published successfully!')
+        router.push('/dashboard/blogs')
       } else {
-        alert(data.message || 'Failed to publish blog post.')
+        const errorMsg = result.message || 'Failed to save blog.'
+        toast.error(errorMsg)
+        setErrors(result.errors || { general: errorMsg })
       }
-    } catch (err) {
-      console.error('Error creating blog article:', err)
+    } catch {
+      const netMsg = 'Failed to create blog due to network error.'
+      toast.error(netMsg)
+      setErrors({ general: netMsg })
     } finally {
-      setSaving(false)
+      setProcessing(false)
     }
   }
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-4xl mx-auto">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-          <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-          <span>/</span>
-          <Link href="/dashboard/blogs" className="hover:text-foreground">Blogs</Link>
-          <span>/</span>
-          <span className="text-foreground font-medium">Create Article</span>
-        </div>
+      <Breadcrumbs
+        title="Create Blog"
+        breadcrumbs={[
+          { title: 'Dashboard', href: '/dashboard' },
+          { title: 'Blogs', href: '/dashboard/blogs' },
+          { title: 'Create New Blog' },
+        ]}
+        className="mb-4"
+      />
 
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Write Blog Article</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Publish educational articles, thought leadership, guides, and platform tutorials.
-          </p>
-        </div>
-
-        {success && (
-          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-            <span>Article published successfully! Redirecting to blogs dashboard...</span>
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {errors.general && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Submission Error</AlertTitle>
+            <AlertDescription>{errors.general}</AlertDescription>
+          </Alert>
         )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Card className="p-6 border-slate-200/80 shadow-xs space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="title" className="text-xs font-semibold">Article Title</Label>
+        {/* Basic Information */}
+        <Card className="py-6">
+          <CardContent className="space-y-6">
+            <div>
+              <Label htmlFor="title">Title *</Label>
               <Input
                 id="title"
-                placeholder="e.g. Modern Web Architecture with Next.js 15"
-                value={title}
+                name="title"
+                value={data.title}
                 onChange={(e) => {
-                  setTitle(e.target.value)
-                  if (!slug) {
-                    setSlug(e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
-                  }
+                  setData((prev) => ({ ...prev, title: e.target.value }))
+                  setErrors((prev) => ({ ...prev, title: '' }))
                 }}
-                required
+                placeholder="Title"
+                maxLength={80}
               />
+              <InputError message={errors.title} />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="slug" className="text-xs font-semibold">Slug</Label>
-                <Input
-                  id="slug"
-                  placeholder="e.g. modern-web-architecture-nextjs-15"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="blog_category_id">Category *</Label>
+                <Combobox
+                  defaultValue={data.categoryId}
+                  data={categories}
+                  placeholder="Select category"
+                  onSelect={(selected) =>
+                    setData((prev) => ({ ...prev, categoryId: selected.value }))
+                  }
                 />
+                <InputError message={errors.categoryId} />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="cat" className="text-xs font-semibold">Category</Label>
-                <select
-                  id="cat"
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full h-10 bg-background border border-input rounded-md px-3 text-xs"
+              <div>
+                <Label htmlFor="status">Status *</Label>
+                <Select
+                  name="status"
+                  value={data.status}
+                  onValueChange={(val) =>
+                    setData((prev) => ({ ...prev, status: val }))
+                  }
                 >
-                  {categories.length > 0 ? (
-                    categories.map((c) => (
-                      <option key={c.id} value={c.id}>{c.title || c.name}</option>
-                    ))
-                  ) : (
-                    <option value="1">Engineering & Tech</option>
-                  )}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
+                <InputError message={errors.status} />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="thumb" className="text-xs font-semibold">Thumbnail URL (Optional)</Label>
+            <div>
+              <Label htmlFor="keywords">Keywords</Label>
               <Input
-                id="thumb"
-                placeholder="https://..."
-                value={thumbnail}
-                onChange={(e) => setThumbnail(e.target.value)}
+                id="keywords"
+                name="keywords"
+                value={data.keywords}
+                onChange={(e) =>
+                  setData((prev) => ({ ...prev, keywords: e.target.value }))
+                }
+                placeholder="Keywords 80 characters max"
+                maxLength={80}
               />
+              <InputError message={errors.keywords} />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="content" className="text-xs font-semibold">Content</Label>
-              <Textarea
-                id="content"
-                rows={10}
-                placeholder="Write your article in Markdown or HTML..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
+            <div>
+              <Label htmlFor="description">Description *</Label>
+              <Editor
+                ssr={true}
+                output="html"
+                placeholder={{
+                  paragraph: 'Write blog content here...',
+                  imageCaption: 'Type caption (optional)',
+                }}
+                contentMinHeight={256}
+                initialContent={data.description}
+                value={data.description}
+                onContentChange={(val) => {
+                  setData((prev) => ({ ...prev, description: val }))
+                  setErrors((prev) => ({ ...prev, description: '' }))
+                }}
               />
+              <InputError message={errors.description} />
             </div>
-          </Card>
+          </CardContent>
+        </Card>
 
-          <div className="flex items-center justify-end gap-3">
-            <Button asChild variant="outline">
-              <Link href="/dashboard/blogs">Cancel</Link>
-            </Button>
-            <Button type="submit" disabled={saving} className="bg-[#007867] hover:bg-[#007867]/90 text-white font-semibold">
-              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-              Publish Article
-            </Button>
-          </div>
-        </form>
-      </div>
+        {/* Media Information */}
+        <Card className="space-y-6 py-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ImageIcon className="h-5 w-5" />
+              Media Files
+            </CardTitle>
+            <CardDescription>
+              Upload banner and thumbnail images for your blog article
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <div>
+              <Label htmlFor="banner">Blog Banner</Label>
+              <Input
+                id="banner"
+                type="file"
+                accept="image/*"
+                name="banner"
+                onChange={(e) => handleFileChange(e, setBannerPreview)}
+              />
+              {bannerPreview && (
+                <div className="mt-2 relative overflow-hidden rounded-lg border border-border/60 bg-muted">
+                  <img
+                    src={bannerPreview}
+                    alt="Banner preview"
+                    className="h-32 w-full object-cover"
+                  />
+                  {uploadingFile && (
+                    <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white text-xs gap-1">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Uploading...</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="thumbnail">Thumbnail</Label>
+              <Input
+                id="thumbnail"
+                type="file"
+                accept="image/*"
+                name="thumbnail"
+                onChange={(e) => handleFileChange(e, setThumbnailPreview, 'thumbnail')}
+              />
+              {thumbnailPreview && (
+                <div className="mt-2 relative overflow-hidden rounded-lg border border-border/60 bg-muted">
+                  <img
+                    src={thumbnailPreview}
+                    alt="Thumbnail preview"
+                    className="h-32 w-full object-cover"
+                  />
+                  {uploadingFile && (
+                    <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white text-xs gap-1">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Uploading...</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end">
+          <LoadingButton loading={processing || uploadingFile}>Save Blog</LoadingButton>
+        </div>
+      </form>
     </DashboardLayout>
   )
 }

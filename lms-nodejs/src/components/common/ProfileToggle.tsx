@@ -88,7 +88,7 @@ export default function ProfileToggle({
         )}
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-[170px]">
+      <DropdownMenuContent align="end" className="w-42.5">
         {(currentUser.role === 'admin' || currentUser.role === 'instructor') && (
           <DropdownMenuItem asChild className="cursor-pointer px-3 font-medium">
             <Link href="/dashboard" className="flex items-center">
@@ -128,7 +128,7 @@ export default function ProfileToggle({
         )}
 
         <DropdownMenuItem
-          className="cursor-pointer px-3 text-red-600 focus:text-red-600"
+          className="cursor-pointer px-3 text-red-600"
           onClick={handleLogout}
         >
           <LogOut className="mr-1.5 h-4 w-4" />

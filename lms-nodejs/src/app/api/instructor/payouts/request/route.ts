@@ -5,7 +5,8 @@ import db from '@/lib/db'
 
 const payoutRequestSchema = z.object({
   amount: z.number().positive('Withdrawal amount must be greater than zero'),
-  payout_method: z.enum(['paypal', 'stripe', 'bank_transfer', 'offline']).default('paypal')
+  payout_method: z.string().optional(),
+  method: z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -21,7 +22,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { amount, payout_method } = parsed.data
+    const { amount } = parsed.data
+    const payoutMethod = body.payout_method || body.method || 'paypal'
 
     const stmt = db.prepare(`
       INSERT INTO payout_histories (
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
         ?, ?, 'pending', ?, datetime('now'), datetime('now')
       )
     `)
-    const res = stmt.run(payout_method, amount, user.id)
+    const res = stmt.run(payoutMethod, amount, user.id)
 
     return NextResponse.json({
       success: true,

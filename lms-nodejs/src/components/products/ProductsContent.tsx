@@ -143,7 +143,7 @@ export default function ProductsContent() {
     <div className="min-h-screen bg-background pb-20">
       {/* Breadcrumb Header */}
       <div className="border-b border-border bg-muted/20 py-4">
-        <div className="container mx-auto max-w-[1280px] px-4 md:px-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="container mx-auto max-w-7xl px-4 md:px-6 flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/" className="hover:text-foreground flex items-center gap-1 transition-colors">
             <Home className="h-4 w-4" />
             <span>Home</span>
@@ -159,7 +159,7 @@ export default function ProductsContent() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-[1280px] px-4 md:px-6 py-8">
+      <div className="container mx-auto max-w-7xl px-4 md:px-6 py-8">
         <div className="flex items-start gap-8">
           {/* Desktop Left Sidebar Filter */}
           <Card className="hidden lg:block w-72 shrink-0 p-5 sticky top-24 border border-border shadow-xs space-y-6">

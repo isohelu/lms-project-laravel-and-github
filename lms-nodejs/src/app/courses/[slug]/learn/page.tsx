@@ -360,7 +360,7 @@ export default function CourseLearnPage({ params }: LearnPageProps) {
             <span className="hidden sm:inline">Back to course</span>
           </Link>
           <div className="h-4 w-px bg-border" />
-          <h1 className="text-xs sm:text-sm font-bold text-foreground truncate max-w-[200px] sm:max-w-md">
+          <h1 className="text-xs sm:text-sm font-bold text-foreground truncate max-w-50 sm:max-w-md">
             {courseTitle}
           </h1>
         </div>
@@ -404,7 +404,7 @@ export default function CourseLearnPage({ params }: LearnPageProps) {
                   <p className="text-base font-semibold text-primary">{courseTitle}</p>
                   <div className="flex justify-between items-center text-[11px] text-muted-foreground pt-4 border-t border-border">
                     <span>Issued: {new Date().toLocaleDateString()}</span>
-                    <span>Credential ID: MLMS-{Math.floor(100000 + Math.random() * 900000)}</span>
+                    <span>Credential ID: MLMS-{((courseId ?? 1) * 10007).toString().padStart(6, '0')}</span>
                   </div>
                 </div>
                 <Button className="w-full font-bold">
@@ -501,28 +501,28 @@ export default function CourseLearnPage({ params }: LearnPageProps) {
               <TabsList className="h-10 border-b border-border bg-transparent gap-2 p-0 w-full justify-start rounded-none">
                 <TabsTrigger
                   value="overview"
-                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                 >
                   <FileText className="h-3.5 w-3.5 mr-1.5" />
                   Lesson Overview
                 </TabsTrigger>
                 <TabsTrigger
                   value="discussions"
-                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                 >
                   <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                   Q&A Discussions ({discussions.length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="resources"
-                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                 >
                   <Download className="h-3.5 w-3.5 mr-1.5" />
                   Resources (3)
                 </TabsTrigger>
                 <TabsTrigger
                   value="notes"
-                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                  className="rounded-none border-b-2 border-transparent px-4 font-semibold text-xs text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                 >
                   <Bookmark className="h-3.5 w-3.5 mr-1.5" />
                   Personal Notes ({savedNotes.length})

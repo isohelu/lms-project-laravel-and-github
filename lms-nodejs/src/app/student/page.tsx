@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import {
   GraduationCap,
+  LayoutDashboard,
   Heart,
   Award,
   Settings as SettingsIcon,
@@ -66,6 +67,7 @@ export default function StudentPortalPage({ initialTab = 'courses' }: { initialT
   const [enrolledExams, setEnrolledExams] = useState<any[]>([])
   const [purchasedProducts, setPurchasedProducts] = useState<any[]>([])
   const [wishlist, setWishlist] = useState<any[]>([])
+  const [certificates, setCertificates] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   // Profile Edit State
@@ -129,7 +131,23 @@ export default function StudentPortalPage({ initialTab = 'courses' }: { initialT
       const wishRes = await fetch('/api/student/wishlist')
       if (wishRes.ok) {
         const wData = await wishRes.json()
-        if (wData.wishlist) setWishlist(wData.wishlist)
+        if (Array.isArray(wData.wishlist)) {
+          setWishlist(wData.wishlist)
+        } else if (wData.wishlist && typeof wData.wishlist === 'object') {
+          const combined = [
+            ...(wData.wishlist.courses || []),
+            ...(wData.wishlist.exams || []),
+            ...(wData.wishlist.products || [])
+          ]
+          setWishlist(combined)
+        }
+      }
+
+      // Fetch Certificates
+      const certRes = await fetch('/api/student/certificates')
+      if (certRes.ok) {
+        const certData = await certRes.json()
+        if (certData.certificates) setCertificates(certData.certificates)
       }
     } catch (err) {
       console.error('Error loading student data:', err)
@@ -241,12 +259,20 @@ export default function StudentPortalPage({ initialTab = 'courses' }: { initialT
             <h3 className="mt-4 font-bold text-foreground text-base">
               {userProfile.name}
             </h3>
-            <p className="text-xs text-muted-foreground truncate max-w-[200px]">
+            <p className="text-xs text-muted-foreground truncate max-w-50">
               {userProfile.email}
             </p>
           </div>
 
           <nav className="space-y-1">
+            <Link
+              href="/student/dashboard"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <LayoutDashboard className="h-4 w-4 text-[#007867]" />
+              <span>Dashboard Overview</span>
+            </Link>
+
             <button
               onClick={() => switchTab('courses')}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
@@ -317,6 +343,9 @@ export default function StudentPortalPage({ initialTab = 'courses' }: { initialT
             >
               <Award className="h-4 w-4" />
               <span>Certificates</span>
+              <Badge variant="secondary" className="ml-auto text-[10px]">
+                {certificates.length}
+              </Badge>
             </button>
 
             <button
@@ -648,35 +677,53 @@ export default function StudentPortalPage({ initialTab = 'courses' }: { initialT
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl border-2 border-amber-500/20 bg-amber-500/5 shadow-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/20 text-amber-500 shrink-0">
-                      <Award className="h-7 w-7" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-foreground">
-                        The Complete 2025 Web Development Bootcamp
-                      </h4>
-                      <p className="text-xs text-muted-foreground">
-                        Instructor: Dr. Angela Yu • Issued: September 2026
-                      </p>
-                      <Badge variant="outline" className="text-[10px] font-mono mt-1 text-amber-600 border-amber-500/30">
-                        Credential ID: CERT-MLMS-2026-9901
-                      </Badge>
-                    </div>
-                  </div>
+              {certificates.length === 0 ? (
+                <Card className="p-8 text-center border-dashed">
+                  <Award className="h-10 w-10 text-muted-foreground mx-auto mb-2 opacity-50" />
+                  <p className="text-sm font-semibold text-foreground">No certificates earned yet</p>
+                  <p className="text-xs text-muted-foreground mt-1 mb-4">
+                    Complete all lessons in enrolled courses to earn verifiable certificates.
+                  </p>
+                  <Button asChild size="sm">
+                    <Link href="/courses/all">Browse Courses</Link>
+                  </Button>
+                </Card>
+              ) : (
+                <div className="space-y-4">
+                  {certificates.map((cert) => (
+                    <div
+                      key={cert.id}
+                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl border-2 border-amber-500/20 bg-amber-500/5 shadow-sm"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/20 text-amber-500 shrink-0">
+                          <Award className="h-7 w-7" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-foreground">
+                            {cert.course_title}
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            Instructor: {cert.instructor_name} • Issued: {cert.issue_date}
+                          </p>
+                          <Badge variant="outline" className="text-[10px] font-mono mt-1 text-amber-600 border-amber-500/30">
+                            Credential ID: {cert.identifier}
+                          </Badge>
+                        </div>
+                      </div>
 
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    <Button asChild size="sm" variant="outline" className="text-xs font-semibold h-8">
-                      <Link href="/certificates/CERT-MLMS-2026-9901">
-                        <ExternalLink className="h-3.5 w-3.5 mr-1" />
-                        Verify Credential
-                      </Link>
-                    </Button>
-                  </div>
+                      <div className="flex items-center gap-2 self-end sm:self-center">
+                        <Button asChild size="sm" variant="outline" className="text-xs font-semibold h-8">
+                          <Link href={cert.verify_url || `/certificates/${cert.identifier}`}>
+                            <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                            Verify Credential
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
           )}
 

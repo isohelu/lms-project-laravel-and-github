@@ -206,7 +206,7 @@ export default function NotificationsPage() {
 
       {/* Notifications List */}
       <div className="container mx-auto px-4 max-w-3xl mt-8">
-        <Card className="p-0 overflow-hidden rounded-2xl border border-border bg-card shadow-sm divide-y divide-border">
+        <Card className="p-0 overflow-hidden rounded-2xl border bg-card shadow-sm divide-y divide-border">
           {filtered.length > 0 ? (
             filtered.map(notif => (
               <div
@@ -214,10 +214,10 @@ export default function NotificationsPage() {
                 onClick={() => handleMarkRead(notif.id)}
                 className={cn(
                   'p-5 transition-colors flex items-start gap-4 hover:bg-muted/30 cursor-pointer',
-                  !notif.isRead && 'bg-primary/[0.03]'
+                  !notif.isRead && 'bg-primary/3'
                 )}
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted flex-shrink-0 mt-0.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted shrink-0 mt-0.5">
                   {getCategoryIcon(notif.category)}
                 </div>
 
@@ -229,7 +229,7 @@ export default function NotificationsPage() {
                     )}>
                       {notif.title}
                     </h3>
-                    <span className="text-xs text-muted-foreground flex-shrink-0 flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground shrink-0 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {notif.createdAt}
                     </span>
@@ -239,19 +239,16 @@ export default function NotificationsPage() {
                     {notif.body}
                   </p>
 
-                  <div className="pt-2 flex items-center gap-4">
-                    <Link
-                      href={`/notifications/${notif.id}`}
-                      className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
-                    >
-                      Read full message
-                      <ChevronRight className="h-3 w-3" />
-                    </Link>
+                  <div className="pt-2 flex items-center justify-between">
+                    <span className="inline-flex items-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      {notif.category}
+                    </span>
 
                     {notif.actionUrl && (
                       <Link
                         href={notif.actionUrl}
-                        className="text-xs font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                        onClick={e => e.stopPropagation()}
                       >
                         Open context
                         <ArrowRight className="h-3 w-3" />
@@ -261,7 +258,7 @@ export default function NotificationsPage() {
                 </div>
 
                 {!notif.isRead && (
-                  <span className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-2" title="Unread" />
+                  <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-2" title="Unread" />
                 )}
               </div>
             ))

@@ -44,7 +44,7 @@ export async function POST(
     }
 
     // Retrieve or create watch history
-    let watchHistory = db.prepare(`
+    const watchHistory = db.prepare(`
       SELECT * FROM watch_histories WHERE user_id = ? AND course_id = ? LIMIT 1
     `).get(user.id, courseId) as { id: number; completed_watching: string } | undefined
 
@@ -120,13 +120,35 @@ export async function POST(
       `).run(countTotalLessons, completedCount, percentage, user.id, courseId)
     }
 
+    // If completed 100%, automatically issue certificate into course_certificates table
+    let certificateIssued = false
+    let certificateIdentifier: string | null = null
+    if (percentage >= 100) {
+      const existingCert = db.prepare('SELECT id, identifier FROM course_certificates WHERE user_id = ? AND course_id = ? LIMIT 1').get(user.id, courseId) as { id: number; identifier: string } | undefined
+      if (existingCert) {
+        certificateIdentifier = existingCert.identifier
+      } else {
+        certificateIdentifier = 'CERT-' + Math.random().toString(36).substring(2, 10).toUpperCase()
+        db.prepare(`
+          INSERT INTO course_certificates (identifier, user_id, course_id, created_at, updated_at)
+          VALUES (?, ?, ?, datetime('now'), datetime('now'))
+        `).run(certificateIdentifier, user.id, courseId)
+        certificateIssued = true
+      }
+    }
+
     return NextResponse.json({
       success: true,
       progress: {
         totalLessons: countTotalLessons,
         completedLessons: completedCount,
         progressPercentage: percentage,
-        completedList
+        completedList,
+        certificate: certificateIdentifier ? {
+          identifier: certificateIdentifier,
+          issued: certificateIssued,
+          verifyUrl: `/certificates/${certificateIdentifier}`
+        } : null
       }
     })
   } catch (error: unknown) {

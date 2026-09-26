@@ -106,13 +106,13 @@ export default function CertificateViewPage() {
 
       {/* Official Certificate Canvas */}
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="relative overflow-hidden rounded-3xl bg-white text-slate-900 border-[10px] border-slate-900 shadow-2xl p-8 sm:p-14 print:p-8 print:border-[8px] print:shadow-none print:m-0">
+        <div className="relative overflow-hidden rounded-3xl bg-white text-slate-900 border-10 border-slate-900 shadow-2xl p-8 sm:p-14 print:p-8 print:border-8 print:shadow-none print:m-0">
           {/* Ornate Inner Double Border */}
           <div className="absolute inset-3 rounded-2xl border-2 border-amber-600/60 pointer-events-none" />
           <div className="absolute inset-5 rounded-xl border border-slate-200 pointer-events-none" />
 
           {/* Background Guilloché / Watermark Pattern */}
-          <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#0f172a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+          <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#0f172a_1px,transparent_1px)] bg-size-[16px_16px] pointer-events-none" />
 
           <div className="relative z-10 flex flex-col items-center text-center space-y-6">
             {/* Academy Crest / Header Logo */}
@@ -138,7 +138,7 @@ export default function CertificateViewPage() {
               <h1 className="text-3xl sm:text-5xl font-serif font-bold text-slate-900 tracking-tight">
                 Certificate of Achievement
               </h1>
-              <div className="mx-auto mt-2 h-1 w-24 bg-gradient-to-r from-amber-600 to-amber-400 rounded-full" />
+              <div className="mx-auto mt-2 h-1 w-24 bg-linear-to-r from-amber-600 to-amber-400 rounded-full" />
             </div>
 
             {/* Recipient Notice */}
@@ -204,7 +204,7 @@ export default function CertificateViewPage() {
         <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm print:hidden">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3 text-center sm:text-left">
-              <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 flex-shrink-0">
+              <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <div>

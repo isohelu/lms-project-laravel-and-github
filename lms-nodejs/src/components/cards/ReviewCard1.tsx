@@ -31,7 +31,7 @@ export default function ReviewCard1({
           />
         ))}
       </div>
-      <p className="mb-6 flex-grow text-xs sm:text-sm text-muted-foreground leading-relaxed italic">
+      <p className="mb-6 grow text-xs sm:text-sm text-muted-foreground leading-relaxed italic">
         &ldquo;{review.description}&rdquo;
       </p>
 

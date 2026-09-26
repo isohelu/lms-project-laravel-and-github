@@ -18,7 +18,7 @@ export default function AuthLayout({
   subtitle,
 }: AuthLayoutProps) {
   return (
-    <div className="mx-auto flex min-h-svh max-w-[1480px]">
+    <div className="mx-auto flex min-h-svh max-w-370">
       {/* Left panel: Headline + Subtitle + Illustration (Desktop) */}
       <div className="hidden flex-1 flex-col items-center justify-center space-y-10 border-r border-border p-10 md:flex md:max-w-xl">
         <div className="space-y-3">
@@ -39,7 +39,7 @@ export default function AuthLayout({
           <img
             src="/assets/images/intro/home-1/hero-image.png"
             alt="LMS Learning"
-            className="mx-auto w-full max-w-[460px] object-contain"
+            className="mx-auto w-full max-w-115 object-contain"
             draggable={false}
           />
         </div>
@@ -47,7 +47,7 @@ export default function AuthLayout({
 
       {/* Right panel (always visible) */}
       <div className="flex flex-1 flex-col items-center justify-center bg-background px-6 py-10 md:px-10">
-        <div className="w-full max-w-[420px] space-y-12">
+        <div className="w-full max-w-105 space-y-12">
           <div className="flex w-full items-center justify-center md:justify-start">
             <Link href="/">
               <AppLogo className="h-8 w-auto" />

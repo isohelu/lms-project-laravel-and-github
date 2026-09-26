@@ -4,7 +4,7 @@ import db from '@/lib/db'
 
 export async function GET() {
   try {
-    const user = await requireRole(['student', 'admin'])
+    const user = await requireRole(['student', 'admin', 'instructor'])
 
     const courses = db.prepare(`
       SELECT c.id, c.title, c.slug, c.price, c.discount_price, c.thumbnail, 'course' as item_type

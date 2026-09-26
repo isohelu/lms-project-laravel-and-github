@@ -8,7 +8,8 @@ const sortLessonsSchema = z.object({
     id: z.number().int().positive(),
     sort: z.number().int().min(0)
   })).optional(),
-  lesson_ids: z.array(z.number().int().positive()).optional()
+  lesson_ids: z.array(z.number().int().positive()).optional(),
+  sortedData: z.array(z.any()).optional(),
 })
 
 export async function POST(
@@ -39,7 +40,12 @@ export async function POST(
 
     const runTransaction = db.transaction(() => {
       const now = new Date().toISOString()
-      if (validated.lessons && validated.lessons.length > 0) {
+      if (validated.sortedData && validated.sortedData.length > 0) {
+        validated.sortedData.forEach((item: any, index: number) => {
+          const lid = typeof item === 'object' ? item.id : item
+          if (lid) updateStmt.run(index + 1, now, Number(lid), courseId)
+        })
+      } else if (validated.lessons && validated.lessons.length > 0) {
         for (const item of validated.lessons) {
           updateStmt.run(item.sort, now, item.id, courseId)
         }

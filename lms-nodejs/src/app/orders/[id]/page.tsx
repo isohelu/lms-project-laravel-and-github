@@ -79,7 +79,7 @@ export default function OrderConfirmationPage() {
       <div className="container mx-auto px-4 max-w-3xl space-y-8">
         {/* Success Banner */}
         <div className="text-center space-y-3">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
             <CheckCircle2 className="h-10 w-10" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Order Confirmed!</h1>
@@ -114,7 +114,7 @@ export default function OrderConfirmationPage() {
           {/* Enrolled Courses / Purchased Items Summary */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground">Purchased Items</h3>
-            <div className="rounded-xl border border-border divide-y divide-border/60 overflow-hidden">
+            <div className="rounded-xl border divide-y divide-border/60 overflow-hidden">
               {displayItems.map((item, idx) => (
                 <div key={idx} className="p-4 flex items-center justify-between gap-4 bg-muted/10">
                   <div className="flex items-center gap-3">

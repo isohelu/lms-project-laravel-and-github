@@ -57,8 +57,8 @@ export default function Home5Hero() {
           </div>
         )}
 
-        <div className="after:pointer-events-none after:absolute after:bottom-10 after:left-0 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(0,167,111,0.15)] after:blur-[140px] after:content-['']"></div>
-        <div className="after:pointer-events-none after:absolute after:top-10 after:right-0 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(97,95,255,0.15)] after:blur-[140px] after:content-['']"></div>
+        <div className="after:pointer-events-none after:absolute after:bottom-10 after:left-0 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(0,167,111,0.15)] after:blur-[140px] after:content-['']"></div>
+        <div className="after:pointer-events-none after:absolute after:top-10 after:right-0 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(97,95,255,0.15)] after:blur-[140px] after:content-['']"></div>
       </div>
     </section>
   )

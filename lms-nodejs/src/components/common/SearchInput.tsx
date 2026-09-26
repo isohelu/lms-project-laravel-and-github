@@ -26,7 +26,7 @@ export default function SearchInput({
   const searchRef = useRef<HTMLInputElement>(null)
 
   return (
-    <div className={cn('relative w-full md:max-w-[260px]', className)}>
+    <div className={cn('relative w-full md:max-w-65', className)}>
       <input
         type="text"
         ref={searchRef}
@@ -35,10 +35,10 @@ export default function SearchInput({
         onKeyDown={onKeyDown}
         placeholder={placeholder}
         className={cn(
-          'flex h-10 w-full min-w-0 rounded-lg border border-input bg-transparent py-[15px] text-sm font-normal text-foreground shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-10 w-full min-w-0 rounded-lg border border-input bg-transparent py-3.75 text-sm font-normal text-foreground shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
           change
             ? 'selection:bg-primary selection:text-primary-foreground hover:border-ring focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring'
-            : 'selection:bg-zinc-900 selection:text-zinc-50 hover:border-zinc-900 focus-visible:border-zinc-900 focus-visible:ring-1 focus-visible:ring-zinc-900 dark:selection:bg-zinc-50 dark:selection:text-zinc-900 dark:hover:border-zinc-50 dark:focus-visible:border-zinc-50 dark:focus-visible:ring-zinc-50',
+            : 'selection:bg-foreground selection:text-background hover:border-foreground focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground',
           iconPosition === 'left' ? 'pr-4 pl-10' : 'pr-10 pl-4'
         )}
       />

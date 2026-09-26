@@ -2,41 +2,66 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import {
-  PlusCircle,
-  Search,
-  Edit,
-  Eye,
-  Book,
-  Users,
-  Loader2,
-  Clock,
-  CheckCircle2,
-  HelpCircle
-} from 'lucide-react'
+import { Plus, ArrowUpDown, Eye, ChevronsUpDown, Loader2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import Breadcrumbs from '@/components/breadcrumbs'
+import TableFilter from '@/components/table/table-filter'
+import TableFooter from '@/components/table/table-footer'
+import ActionsDropdown from '@/components/actions-dropdown'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export default function DashboardManageExamsPage() {
   const [exams, setExams] = useState<any[]>([])
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [sortField, setSortField] = useState<'instructor' | 'enrollments' | null>(null)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   const loadExams = async () => {
     try {
       setLoading(true)
-      const res = await fetch('/api/instructor/exams')
+      const queryParams = new URLSearchParams({
+        page: String(currentPage),
+        limit: String(pageSize),
+        status: statusFilter,
+      })
+      if (search.trim()) {
+        queryParams.set('search', search.trim())
+      }
+
+      const res = await fetch(`/api/exams?${queryParams.toString()}`)
       if (res.ok) {
         const data = await res.json()
         if (data.exams) {
           setExams(data.exams)
+          setTotal(data.total || 0)
         }
       }
     } catch (err) {
       console.error('Error loading exams:', err)
+      toast.error('Failed to load exams')
     } finally {
       setLoading(false)
     }
@@ -44,164 +69,310 @@ export default function DashboardManageExamsPage() {
 
   useEffect(() => {
     loadExams()
-  }, [])
+  }, [currentPage, pageSize, statusFilter, search])
 
-  const toggleStatus = async (examId: number, currentStatus: string) => {
-    const nextStatus = currentStatus === 'published' ? 'draft' : 'published'
+  const handleDeleteExam = async (examId: number) => {
     try {
-      const res = await fetch(`/api/admin/exams/${examId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus })
+      const res = await fetch(`/api/exams/${examId}`, {
+        method: 'DELETE',
       })
-      if (res.ok) {
-        setExams(prev =>
-          prev.map(e => (e.id === examId ? { ...e, status: nextStatus } : e))
-        )
+      const data = await res.json()
+      if (res.ok && data.success) {
+        toast.success('Exam deleted successfully')
+        loadExams()
+      } else {
+        toast.error(data.message || 'Failed to delete exam')
       }
     } catch (err) {
-      console.error('Failed to toggle exam status:', err)
+      console.error('Failed to delete exam:', err)
+      toast.error('Failed to delete exam')
     }
   }
 
-  const filtered = exams.filter((e) =>
-    e.title && e.title.toLowerCase().includes(search.toLowerCase())
-  )
+  const toggleSort = (field: 'instructor' | 'enrollments') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortOrder('asc')
+    }
+  }
+
+  const sortedExams = [...exams].sort((a, b) => {
+    if (!sortField) return 0
+    if (sortField === 'instructor') {
+      const nameA = (a.instructor_name || '').toLowerCase()
+      const nameB = (b.instructor_name || '').toLowerCase()
+      return sortOrder === 'asc'
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA)
+    }
+    if (sortField === 'enrollments') {
+      const countA = Number(a.enrollments_count || 0)
+      const countB = Number(b.enrollments_count || 0)
+      return sortOrder === 'asc' ? countA - countB : countB - countA
+    }
+    return 0
+  })
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-              <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-              <span>/</span>
-              <span className="text-foreground font-medium">Exams</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Manage Exams</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Create, configure, and monitor exam questions, durations, and passing grades.
-            </p>
-          </div>
-
-          <Button asChild className="rounded-xl font-semibold gap-2 shadow-xs bg-[#007867] hover:bg-[#007867]/90 text-white">
+      <Breadcrumbs
+        title="Exams"
+        breadcrumbs={[
+          { title: 'Dashboard', href: '/dashboard' },
+          { title: 'Exams' },
+        ]}
+        action={
+          <Button asChild className="h-9 px-4">
             <Link href="/dashboard/exams/create">
-              <PlusCircle className="h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Create Exam
             </Link>
           </Button>
-        </div>
+        }
+        className="mb-4"
+      />
 
-        {/* Search */}
-        <Card className="p-4 border-slate-200/80 shadow-xs">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search exams..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 text-xs bg-background"
-            />
-          </div>
-        </Card>
+      <Card>
+        <TableFilter
+          title="Exam List"
+          search={search}
+          onSearchChange={(val) => {
+            setSearch(val)
+            setCurrentPage(1)
+          }}
+          pageSize={pageSize}
+          onPageSizeChange={(val) => {
+            setPageSize(val)
+            setCurrentPage(1)
+          }}
+          tablePageSizes={[10, 15, 20, 25]}
+        />
 
-        {/* Table Card */}
-        <Card className="border-slate-200/80 shadow-xs overflow-hidden">
-          {loading ? (
-            <div className="py-20 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-[#007867] mx-auto mb-2" />
-              <p className="text-xs text-muted-foreground font-medium">Loading exams...</p>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="p-16 text-center">
-              <Book className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-foreground">No exams found</p>
-              <p className="text-xs text-muted-foreground mt-1 mb-4">Create your first examination to assess learners.</p>
-              <Button asChild size="sm" className="bg-[#007867] hover:bg-[#007867]/90 text-white">
-                <Link href="/dashboard/exams/create">Create Exam</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-500 uppercase tracking-wider font-semibold">
-                    <th className="py-3 px-4">Exam Title</th>
-                    <th className="py-3 px-4">Duration</th>
-                    <th className="py-3 px-4">Pass Mark</th>
-                    <th className="py-3 px-4">Price</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filtered.map((exam) => {
-                    const isPublished = exam.status === 'published'
-                    return (
-                      <tr key={exam.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3 px-4">
-                          <div>
-                            <p className="font-semibold text-foreground">{exam.title}</p>
-                            <p className="text-[11px] text-muted-foreground">ID: #{exam.id}</p>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-muted-foreground">
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="h-3.5 w-3.5" />
-                            <span>{exam.duration || 60} mins</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 font-medium text-foreground">
-                          {exam.pass_mark || 70}%
-                        </td>
-                        <td className="py-3 px-4 font-semibold text-foreground">
-                          {exam.price ? `$${exam.price}` : 'Free'}
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge
-                            variant="secondary"
-                            className={
-                              isPublished
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                : 'bg-amber-50 text-amber-700 border-amber-200'
-                            }
-                          >
-                            {isPublished ? 'Published' : 'Draft'}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleStatus(exam.id, exam.status)}
-                              className="h-8 px-2 text-xs font-medium text-muted-foreground hover:text-foreground"
-                            >
-                              {isPublished ? 'Unpublish' : 'Publish'}
-                            </Button>
-                            <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                              <Link href={`/exams/${exam.slug || exam.id}`}>
-                                <Eye className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                              <Link href={`/dashboard/exams/create?edit=${exam.id}`}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-      </div>
+        <Table className="border-y border-border">
+          <TableHeader>
+            <TableRow>
+              {/* Instructor */}
+              <TableHead>
+                <div className="flex items-center pl-1">
+                  <Button
+                    variant="ghost"
+                    className="p-0 hover:bg-transparent font-semibold"
+                    onClick={() => toggleSort('instructor')}
+                  >
+                    Instructor
+                    <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </TableHead>
+
+              {/* Exam Title */}
+              <TableHead className="font-semibold">Exam Title</TableHead>
+
+              {/* Status */}
+              <TableHead className="text-center font-semibold">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="text-muted-foreground capitalize h-8 gap-1 mx-auto"
+                    >
+                      <span>{statusFilter === 'all' ? 'Status' : statusFilter}</span>
+                      <ChevronsUpDown className="h-3 w-3 text-muted-foreground" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="min-w-25">
+                    {['all', 'draft', 'published', 'archived'].map((st) => (
+                      <DropdownMenuItem
+                        key={st}
+                        onClick={() => {
+                          setStatusFilter(st)
+                          setCurrentPage(1)
+                        }}
+                        className={cn(
+                          'cursor-pointer text-center capitalize justify-center',
+                          statusFilter === st && 'bg-primary/10 text-primary font-bold'
+                        )}
+                      >
+                        {st}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableHead>
+
+              {/* Level */}
+              <TableHead className="text-center font-semibold">Level</TableHead>
+
+              {/* Enrollments */}
+              <TableHead className="text-center font-semibold">
+                <Button
+                  variant="ghost"
+                  className="hover:bg-transparent font-semibold mx-auto"
+                  onClick={() => toggleSort('enrollments')}
+                >
+                  Enrollments
+                  <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
+                </Button>
+              </TableHead>
+
+              {/* Price */}
+              <TableHead className="text-center font-semibold">Price</TableHead>
+
+              {/* Attempts */}
+              <TableHead className="text-center font-semibold">Attempts</TableHead>
+
+              {/* Actions */}
+              <TableHead className="pr-4 text-end font-semibold">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="h-32 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span className="text-muted-foreground text-sm">Loading exams...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : sortedExams.length > 0 ? (
+              sortedExams.map((exam) => {
+                const discountPrice = exam.discount_price ? Number(exam.discount_price) : null
+                const price = exam.price ? Number(exam.price) : 0
+                const displayPrice = discountPrice || price
+
+                return (
+                  <TableRow key={exam.id}>
+                    {/* Instructor */}
+                    <TableCell className="py-3">
+                      <div className="pl-4">
+                        <p className="mb-0.5 text-base font-medium">
+                          {exam.instructor_name || 'Admin Instructor'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {exam.instructor_email || 'instructor@example.com'}
+                        </p>
+                      </div>
+                    </TableCell>
+
+                    {/* Title */}
+                    <TableCell className="py-3">
+                      <div className="py-1">
+                        <Link
+                          href={`/dashboard/exams/${exam.id}`}
+                          className="font-medium hover:underline text-foreground"
+                        >
+                          {exam.title}
+                        </Link>
+                        <p className="text-xs text-muted-foreground">
+                          {exam.category_title || 'General'}
+                        </p>
+                      </div>
+                    </TableCell>
+
+                    {/* Status */}
+                    <TableCell className="py-3 text-center">
+                      <Badge
+                        variant={exam.status === 'published' ? 'default' : 'secondary'}
+                        className="capitalize"
+                      >
+                        {exam.status || 'draft'}
+                      </Badge>
+                    </TableCell>
+
+                    {/* Level */}
+                    <TableCell className="py-3 text-center">
+                      {exam.level ? (
+                        <Badge variant="outline" className="capitalize">
+                          {exam.level}
+                        </Badge>
+                      ) : (
+                        '--'
+                      )}
+                    </TableCell>
+
+                    {/* Enrollments */}
+                    <TableCell className="py-3 text-center font-medium">
+                      {exam.enrollments_count || 0}
+                    </TableCell>
+
+                    {/* Price */}
+                    <TableCell className="py-3 text-center">
+                      {exam.pricing_type === 'paid' ? (
+                        <span className="font-semibold">
+                          ${displayPrice.toFixed(2)}
+                        </span>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="bg-green-50 text-green-600 dark:bg-green-950/40 dark:text-green-400 border-green-200 dark:border-green-800"
+                        >
+                          Free
+                        </Badge>
+                      )}
+                    </TableCell>
+
+                    {/* Attempts */}
+                    <TableCell className="py-3 text-center">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/dashboard/exams/${exam.id}/attempts`}>
+                          <Eye className="mr-1 h-3.5 w-3.5" />
+                          {exam.attempts_count || 0}{' '}
+                          {(exam.attempts_count || 0) === 1 ? 'Attempt' : 'Attempts'}
+                        </Link>
+                      </Button>
+                    </TableCell>
+
+                    {/* Actions */}
+                    <TableCell className="py-3">
+                      <div className="flex justify-end pr-4">
+                        <ActionsDropdown
+                          className="max-w-36"
+                          routes={[
+                            {
+                              label: 'View',
+                              method: 'get',
+                              route: `/exams/${exam.slug || exam.id}`,
+                            },
+                            {
+                              label: 'Edit',
+                              method: 'get',
+                              route: `/dashboard/exams/${exam.id}`,
+                            },
+                            {
+                              label: 'Delete',
+                              method: 'delete',
+                              route: `/api/exams/${exam.id}`,
+                              message: `Are you sure you want to delete "${exam.title}"? This action cannot be undone.`,
+                            },
+                          ]}
+                          onDeleteSuccess={loadExams}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
+                  No exams found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        <TableFooter
+          currentPage={currentPage}
+          total={total}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+        />
+      </Card>
     </DashboardLayout>
   )
 }

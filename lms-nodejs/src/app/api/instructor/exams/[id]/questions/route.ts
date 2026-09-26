@@ -7,11 +7,11 @@ import db from '@/lib/db'
 const questionSchema = z.object({
   title: z.string().min(3, 'Question title must be at least 3 characters'),
   question_type: z.enum(['multiple_choice', 'single_choice', 'true_false']).default('multiple_choice'),
-  marks: z.number().min(1).default(10),
+  marks: z.coerce.number().min(1).default(10),
   options: z.array(
     z.object({
       option_text: z.string().min(1, 'Option text is required'),
-      is_correct: z.boolean().default(false)
+      is_correct: z.union([z.boolean(), z.number()]).transform((val) => Boolean(val)).default(false)
     })
   ).min(2, 'At least 2 options are required')
 })

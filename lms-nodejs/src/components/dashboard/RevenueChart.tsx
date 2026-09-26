@@ -47,8 +47,8 @@ export default function RevenueChart({
   }, [chartData])
 
   return (
-    <Card className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs sm:p-6">
-      <h3 className="mb-5 text-lg font-medium text-slate-900 tracking-tight">
+    <Card className="rounded-xl border border-border/60 bg-card p-4 sm:p-6 shadow-xs">
+      <h3 className="mb-4 text-lg font-medium text-foreground">
         {title}
       </h3>
 
@@ -61,20 +61,20 @@ export default function RevenueChart({
             >
               <defs>
                 <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.01} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
 
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border/60" />
 
               <XAxis
                 dataKey="month"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
+                tickMargin={8}
                 tickFormatter={(value: string) => value.slice(0, 3)}
-                tick={{ fill: '#64748b', fontSize: 12, fontFamily: 'inherit' }}
+                tick={{ fill: 'var(--muted-foreground, #64748b)', fontSize: 12, fontFamily: 'inherit' }}
               />
 
               <YAxis
@@ -82,7 +82,7 @@ export default function RevenueChart({
                 tickLine={false}
                 tickMargin={8}
                 domain={yDomain}
-                tick={{ fill: '#64748b', fontSize: 12, fontFamily: 'inherit' }}
+                tick={{ fill: 'var(--muted-foreground, #64748b)', fontSize: 12, fontFamily: 'inherit' }}
               />
 
               <Tooltip
@@ -90,9 +90,9 @@ export default function RevenueChart({
                   if (active && payload && payload.length) {
                     const data = payload[0].payload
                     return (
-                      <div className="rounded-xl border border-slate-100 bg-white p-3 shadow-lg ring-1 ring-black/5">
-                        <p className="text-xs font-semibold text-slate-500">{data.month}</p>
-                        <p className="mt-0.5 text-base font-bold text-[#10b981]">
+                      <div className="rounded-xl border border-border bg-card p-3 shadow-lg">
+                        <p className="text-xs font-semibold text-muted-foreground">{data.month}</p>
+                        <p className="mt-0.5 text-base font-bold text-emerald-600 dark:text-emerald-400">
                           ${Number(data.value).toFixed(2)}
                         </p>
                       </div>
@@ -108,7 +108,7 @@ export default function RevenueChart({
                 stroke="#10b981"
                 strokeWidth={2}
                 fill="url(#revenueGradient)"
-                name="Admin Revenue"
+                name={title}
               />
             </AreaChart>
           </ResponsiveContainer>

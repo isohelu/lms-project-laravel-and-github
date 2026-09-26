@@ -142,7 +142,7 @@ export default function ProductCard({
       <CardHeader className="p-0">
         <div className="relative p-2 pb-0">
           <Link href={detailHref} className="block overflow-hidden rounded-lg">
-            <div className="relative h-[190px] w-full overflow-hidden rounded-lg bg-muted">
+            <div className="relative h-47.5 w-full overflow-hidden rounded-lg bg-muted">
               <img
                 src={product.thumbnail || '/assets/images/blank-image.jpg'}
                 alt={product.title}
@@ -191,7 +191,7 @@ export default function ProductCard({
           </div>
 
           <Link href={detailHref}>
-            <h3 className="line-clamp-2 text-sm font-semibold text-foreground hover:text-primary transition-colors min-h-[2.5rem]">
+            <h3 className="line-clamp-2 text-sm font-semibold text-foreground hover:text-primary transition-colors min-h-10">
               {product.title}
             </h3>
           </Link>

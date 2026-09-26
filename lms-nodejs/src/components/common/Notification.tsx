@@ -78,7 +78,7 @@ export default function Notification() {
           className="relative h-9 w-9 rounded-full p-0"
           aria-label="View notifications"
         >
-          <Bell className="!h-5 !w-5" />
+          <Bell className="h-5! w-5!" />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white shadow-sm">
               {unreadCount > 9 ? '9+' : unreadCount}
@@ -108,7 +108,7 @@ export default function Notification() {
           )}
         </div>
 
-        <ScrollArea className="max-h-[320px]">
+        <ScrollArea className="max-h-80">
           <div className="flex flex-col py-1">
             {notifications.length > 0 ? (
               notifications.map(({ id, data, read_at }) => {

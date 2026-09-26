@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Mail
 } from 'lucide-react'
+import Breadcrumbs from '@/components/breadcrumbs'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
@@ -53,22 +54,16 @@ export default function CourseEnrollmentsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb & Header */}
-        <div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-            <span>/</span>
-            <Link href="/dashboard/courses" className="hover:text-foreground">Courses</Link>
-            <span>/</span>
-            <span className="text-foreground font-medium">Enrollments</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Course Enrollments</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Monitor real-time student registrations, admissions, and course access.
-          </p>
-        </div>
+      <Breadcrumbs
+        title="Course Enrollments"
+        breadcrumbs={[
+          { title: 'Dashboard', href: '/dashboard' },
+          { title: 'Course Enrollments' },
+        ]}
+        className="mb-4"
+      />
 
+      <div className="space-y-6">
         {/* Search */}
         <Card className="p-4 border-slate-200/80 shadow-xs">
           <div className="relative w-full sm:w-80">

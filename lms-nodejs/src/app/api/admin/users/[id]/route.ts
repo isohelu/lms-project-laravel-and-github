@@ -1,67 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { requireRole } from '@/lib/auth/session'
+import { requireAdmin } from '@/lib/auth/session'
 import { userRepository } from '@/lib/repositories/userRepository'
+import db from '@/lib/db'
 
-const userUpdateSchema = z.object({
-  role: z.enum(['student', 'instructor', 'admin']).optional(),
-  status: z.number().int().min(0).max(1).optional(),
-  name: z.string().min(2).optional()
-})
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAdmin()
+    const { id } = await params
+    const userId = parseInt(id, 10)
+    if (isNaN(userId)) {
+      return NextResponse.json({ success: false, message: 'Invalid user ID' }, { status: 400 })
+    }
+
+    const user = userRepository.findById(userId)
+    if (!user) {
+      return NextResponse.json({ success: false, message: 'User not found.' }, { status: 404 })
+    }
+    return NextResponse.json({ success: true, user })
+  } catch (error: unknown) {
+    console.error('Get user error:', error)
+    return NextResponse.json({ success: false, message: 'Failed to retrieve user.' }, { status: 500 })
+  }
+}
 
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const admin = await requireRole(['admin'])
-    const { id } = await context.params
-    const targetUserId = parseInt(id, 10)
-
-    if (isNaN(targetUserId)) {
-      return NextResponse.json({ success: false, message: 'Invalid user ID.' }, { status: 400 })
+    await requireAdmin()
+    const { id } = await params
+    const userId = parseInt(id, 10)
+    if (isNaN(userId)) {
+      return NextResponse.json({ success: false, message: 'Invalid user ID' }, { status: 400 })
     }
 
     const body = await req.json()
-    const parsed = userUpdateSchema.safeParse(body)
-    if (!parsed.success) {
-      return NextResponse.json(
-        { success: false, errors: parsed.error.flatten().fieldErrors },
-        { status: 422 }
-      )
-    }
 
-    // Guard against admin accidentally banning or demoting their own active account
-    if (targetUserId === admin.id && (parsed.data.status === 0 || (parsed.data.role && parsed.data.role !== 'admin'))) {
-      return NextResponse.json(
-        { success: false, message: 'You cannot ban or demote your own administrator account.' },
-        { status: 400 }
-      )
-    }
+    const updated = userRepository.update(userId, {
+      name: body.name,
+      email: body.email,
+      role: body.role,
+      status: body.status !== undefined ? Number(body.status) : undefined,
+      photo: body.photo
+    })
 
-    const updated = userRepository.update(targetUserId, parsed.data)
     if (!updated) {
       return NextResponse.json({ success: false, message: 'User not found.' }, { status: 404 })
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'User updated successfully.',
-      user: {
-        id: updated.id,
-        name: updated.name,
-        email: updated.email,
-        role: updated.role,
-        status: updated.status
+    if (body.role === 'instructor') {
+      const existing = db.prepare('SELECT id FROM instructors WHERE user_id = ?').get(userId)
+      if (!existing) {
+        db.prepare(`
+          INSERT INTO instructors (user_id, headline, bio, skills, created_at, updated_at)
+          VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))
+        `).run(userId, body.headline || 'Course Instructor', body.bio || null, body.skills || null)
+      } else {
+        db.prepare(`
+          UPDATE instructors SET
+            headline = COALESCE(?, headline),
+            bio = COALESCE(?, bio),
+            updated_at = datetime('now')
+          WHERE user_id = ?
+        `).run(body.headline || null, body.bio || null, userId)
       }
-    })
+    }
+
+    return NextResponse.json({ success: true, message: 'User updated successfully.', user: updated })
   } catch (error: unknown) {
-    if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ success: false, message: 'Unauthorized.' }, { status: 401 })
-    }
-    if (error instanceof Error && error.message.includes('Forbidden')) {
-      return NextResponse.json({ success: false, message: 'Forbidden. Admin access required.' }, { status: 403 })
-    }
     console.error('Update user error:', error)
     return NextResponse.json({ success: false, message: 'Failed to update user.' }, { status: 500 })
   }
@@ -69,37 +79,22 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const admin = await requireRole(['admin'])
-    const { id } = await context.params
-    const targetUserId = parseInt(id, 10)
-
-    if (isNaN(targetUserId)) {
-      return NextResponse.json({ success: false, message: 'Invalid user ID.' }, { status: 400 })
+    await requireAdmin()
+    const { id } = await params
+    const userId = parseInt(id, 10)
+    if (isNaN(userId)) {
+      return NextResponse.json({ success: false, message: 'Invalid user ID' }, { status: 400 })
     }
 
-    if (targetUserId === admin.id) {
-      return NextResponse.json(
-        { success: false, message: 'You cannot delete your own administrator account.' },
-        { status: 400 }
-      )
+    const deleted = userRepository.delete(userId)
+    if (!deleted) {
+      return NextResponse.json({ success: false, message: 'User not found or delete failed.' }, { status: 404 })
     }
-
-    const deleted = userRepository.delete(targetUserId)
-
-    return NextResponse.json({
-      success: deleted,
-      message: deleted ? 'User deleted successfully.' : 'User not found.'
-    })
+    return NextResponse.json({ success: true, message: 'User deleted successfully.' })
   } catch (error: unknown) {
-    if (error instanceof Error && error.message.includes('Unauthorized')) {
-      return NextResponse.json({ success: false, message: 'Unauthorized.' }, { status: 401 })
-    }
-    if (error instanceof Error && error.message.includes('Forbidden')) {
-      return NextResponse.json({ success: false, message: 'Forbidden. Admin access required.' }, { status: 403 })
-    }
     console.error('Delete user error:', error)
     return NextResponse.json({ success: false, message: 'Failed to delete user.' }, { status: 500 })
   }

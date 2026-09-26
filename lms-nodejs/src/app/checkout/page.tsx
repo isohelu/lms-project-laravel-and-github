@@ -234,10 +234,10 @@ export default function CheckoutPage() {
               </Card>
 
               {/* 30-Day Money Back Guarantee Banner */}
-              <div className="flex items-center gap-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-800 dark:text-emerald-300">
-                <ShieldCheck className="h-8 w-8 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex items-center gap-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-emerald-600">
+                <ShieldCheck className="h-8 w-8 shrink-0 text-emerald-500" />
                 <div>
-                  <p className="text-sm font-semibold">30-Day 100% Money-Back Guarantee</p>
+                  <p className="text-sm font-semibold text-foreground">30-Day 100% Money-Back Guarantee</p>
                   <p className="text-xs text-muted-foreground">If you are not satisfied with the course, get a complete refund within 30 days of purchase.</p>
                 </div>
               </div>

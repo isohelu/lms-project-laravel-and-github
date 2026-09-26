@@ -11,7 +11,7 @@ export default function Home4Hero() {
   return (
     <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28">
       <div className="container mx-auto px-4">
-        <div className="mx-auto mb-14 max-w-[760px] text-center">
+        <div className="mx-auto mb-14 max-w-190 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary mb-6">
             ★ Next-Generation Learning Experience
           </div>
@@ -55,11 +55,11 @@ export default function Home4Hero() {
         </div>
 
         {/* Video Thumbnail Card with Play Modal */}
-        <div className="relative mx-auto max-w-[880px] overflow-hidden rounded-3xl border border-border/80 bg-card shadow-card-hover md:rounded-4xl group">
+        <div className="relative mx-auto max-w-220 overflow-hidden rounded-3xl border border-border/80 bg-card shadow-card-hover md:rounded-4xl group">
           <img
             src="/assets/images/intro/home-1/hero-image.png"
             alt="Platform preview"
-            className="mx-auto w-full max-h-[500px] object-cover transition-transform duration-500 group-hover:scale-105"
+            className="mx-auto w-full max-h-125 object-cover transition-transform duration-500 group-hover:scale-105"
           />
 
           <button

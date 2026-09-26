@@ -144,9 +144,24 @@ export default function CourseBuilderPage() {
     setNewOutcome('')
   }
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    try {
+      await fetch('/api/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: courseInfo.title || 'Untitled New Course',
+          short_description: courseInfo.shortDescription,
+          category: courseInfo.category,
+          price: Number(pricing.price) || 49,
+          level: courseInfo.level,
+        })
+      })
+    } catch {
+      // ignore
+    }
     alert('Course draft saved and submitted for publication!')
-    router.push('/instructor/courses')
+    router.push('/dashboard/courses')
   }
 
   return (

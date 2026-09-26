@@ -5,17 +5,18 @@ import { courseRepository } from '@/lib/repositories/courseRepository'
 import db from '@/lib/db'
 
 const courseCreateSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  slug: z.string().min(3, 'Slug must be at least 3 characters'),
-  category_id: z.number().int().positive().optional(),
-  level: z.enum(['beginner', 'intermediate', 'advanced']).default('beginner'),
-  pricing_type: z.enum(['free', 'paid']).default('free'),
-  price: z.number().min(0).default(0),
-  discount: z.number().default(0),
-  discount_price: z.number().nullable().optional(),
-  short_description: z.string().optional(),
-  description: z.string().optional(),
-  thumbnail: z.string().url().optional()
+  title: z.preprocess((val) => String(val ?? '').trim(), z.string().min(1, 'Title is required')),
+  slug: z.preprocess((val) => (val ? String(val).trim() : ''), z.string().optional()),
+  category_id: z.coerce.number().int().positive().optional(),
+  course_category_id: z.coerce.number().int().positive().optional(),
+  level: z.preprocess((val) => String(val ?? 'beginner').toLowerCase(), z.enum(['beginner', 'intermediate', 'advanced'])).default('beginner'),
+  pricing_type: z.preprocess((val) => String(val ?? 'free').toLowerCase(), z.enum(['free', 'paid'])).default('free'),
+  price: z.coerce.number().min(0).default(0),
+  discount: z.coerce.number().default(0),
+  discount_price: z.preprocess((val) => (val === '' || val === null || val === undefined ? null : Number(val)), z.number().nullable().optional()),
+  short_description: z.preprocess((val) => (val === null || val === undefined ? '' : String(val)), z.string().optional()),
+  description: z.preprocess((val) => (val === null || val === undefined ? '' : String(val)), z.string().optional()),
+  thumbnail: z.preprocess((val) => (val === null || val === undefined ? '' : String(val)), z.string().optional())
 })
 
 export async function GET() {
@@ -53,20 +54,24 @@ export async function POST(req: NextRequest) {
     const parsed = courseCreateSchema.safeParse(body)
 
     if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors
+      const firstError = Object.values(fieldErrors)[0]?.[0] || 'Invalid course data provided.'
       return NextResponse.json(
-        { success: false, errors: parsed.error.flatten().fieldErrors },
+        { success: false, message: firstError, errors: fieldErrors },
         { status: 422 }
       )
     }
 
+    const data = parsed.data
+    const generatedSlug = data.slug || (data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '-' + Date.now())
+
     const instructor = db.prepare('SELECT id FROM instructors WHERE user_id = ?').get(user.id) as { id: number } | undefined
     const instructorId = instructor ? instructor.id : 1
 
-    const data = parsed.data
     const courseId = courseRepository.create({
       title: data.title,
-      slug: data.slug,
-      course_category_id: data.category_id || 1,
+      slug: generatedSlug,
+      course_category_id: data.course_category_id || data.category_id || 1,
       instructor_id: instructorId,
       level: data.level,
       pricing_type: data.pricing_type,

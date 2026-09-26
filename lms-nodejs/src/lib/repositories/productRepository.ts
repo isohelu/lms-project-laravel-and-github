@@ -21,10 +21,16 @@ export interface ProductRecord {
   product_category_child_id?: number | null
   created_at?: string
   updated_at?: string
+  meta_title?: string | null
+  meta_keywords?: string | null
+  meta_description?: string | null
+  og_title?: string | null
+  og_description?: string | null
   // Virtual / joined fields
   category_title?: string
   category_slug?: string
   instructor_name?: string
+  instructor_email?: string
   instructor_photo?: string
   orders_count?: number
   reviews_count?: number
@@ -132,7 +138,7 @@ export const productRepository = {
               p.pricing_type, p.thumbnail, p.summary, p.status, p.created_at,
               p.featured, p.inventory, p.unlimited_inventory, p.views,
               cat.title as category_title, cat.slug as category_slug,
-              u.name as instructor_name, u.photo as instructor_photo,
+              u.name as instructor_name, u.email as instructor_email, u.photo as instructor_photo,
               (SELECT COUNT(*) FROM product_orders po WHERE po.product_id = p.id) as orders_count,
               (SELECT COUNT(*) FROM product_reviews pr WHERE pr.product_id = p.id) as reviews_count,
               (SELECT COALESCE(AVG(rating), 5.0) FROM product_reviews pr WHERE pr.product_id = p.id) as average_rating
@@ -188,7 +194,12 @@ export const productRepository = {
     }
   },
 
-  findById(id: number): ProductRecord | null {
+  findById(id: number): (ProductRecord & {
+    specifications: ProductSpecificationRecord[]
+    faqs: ProductFaqRecord[]
+    files: ProductMediaFileRecord[]
+    images: { id: number; name: string; url: string }[]
+  }) | null {
     const stmt = db.prepare(
       `SELECT p.*,
               cat.title as category_title, cat.slug as category_slug,
@@ -200,7 +211,61 @@ export const productRepository = {
        LEFT JOIN users u ON ins.user_id = u.id
        WHERE p.id = ?`
     )
-    return (stmt.get(id) as ProductRecord) || null
+    const product = stmt.get(id) as ProductRecord | undefined
+    if (!product) return null
+
+    const specs = db.prepare(
+      'SELECT * FROM product_specifications WHERE product_id = ? ORDER BY sort ASC'
+    ).all(product.id) as ProductSpecificationRecord[]
+
+    const faqs = db.prepare(
+      'SELECT * FROM product_faqs WHERE product_id = ? ORDER BY sort ASC'
+    ).all(product.id) as ProductFaqRecord[]
+
+    const files = this.getFiles(product.id)
+
+    const galleryRows = db.prepare(`
+      SELECT id, name, file_name
+      FROM media
+      WHERE model_id = ? AND collection_name IN ('gallery-images', 'images')
+      ORDER BY id ASC
+    `).all(product.id) as { id: number; name: string; file_name: string }[]
+
+    const images = galleryRows.map(r => ({
+      id: r.id,
+      name: r.name,
+      url: `/uploads/${r.file_name}`
+    }))
+
+    return {
+      ...product,
+      specifications: specs,
+      faqs,
+      files,
+      images
+    }
+  },
+
+  addSpecification(productId: number, title: string, value: string): number {
+    const stmt = db.prepare('INSERT INTO product_specifications (product_id, title, value, sort) VALUES (?, ?, ?, (SELECT COALESCE(MAX(sort), 0) + 1 FROM product_specifications WHERE product_id = ?))')
+    const res = stmt.run(productId, title, value, productId)
+    return Number(res.lastInsertRowid)
+  },
+
+  deleteSpecification(id: number): boolean {
+    const res = db.prepare('DELETE FROM product_specifications WHERE id = ?').run(id)
+    return res.changes > 0
+  },
+
+  addFaq(productId: number, question: string, answer: string): number {
+    const stmt = db.prepare('INSERT INTO product_faqs (product_id, question, answer, sort) VALUES (?, ?, ?, (SELECT COALESCE(MAX(sort), 0) + 1 FROM product_faqs WHERE product_id = ?))')
+    const res = stmt.run(productId, question, answer, productId)
+    return Number(res.lastInsertRowid)
+  },
+
+  deleteFaq(id: number): boolean {
+    const res = db.prepare('DELETE FROM product_faqs WHERE id = ?').run(id)
+    return res.changes > 0
   },
 
   getFiles(productId: number): ProductMediaFileRecord[] {
@@ -261,10 +326,11 @@ export const productRepository = {
     return Number(result.lastInsertRowid)
   },
 
-  getUserPurchases(userId: number): (ProductRecord & { order_id: number; purchase_date: string })[] {
+  getUserPurchases(userId: number): (ProductRecord & { order_id: number; purchase_date: string; total?: number; order_number?: string })[] {
     const stmt = db.prepare(`
       SELECT p.id, p.title, p.slug, p.price, p.thumbnail, p.summary, p.status,
-             po.id as order_id, po.created_at as purchase_date,
+             po.id as order_id, po.created_at as purchase_date, po.total as total,
+             'ORD-' || printf('%05d', po.id) as order_number,
              cat.title as category_title,
              u.name as instructor_name
       FROM product_orders po
@@ -275,7 +341,7 @@ export const productRepository = {
       WHERE po.user_id = ?
       ORDER BY po.id DESC
     `)
-    return stmt.all(userId) as (ProductRecord & { order_id: number; purchase_date: string })[]
+    return stmt.all(userId) as (ProductRecord & { order_id: number; purchase_date: string; total?: number; order_number?: string })[]
   },
 
   create(product: Partial<ProductRecord>): number {
@@ -283,11 +349,11 @@ export const productRepository = {
       INSERT INTO products (
         title, slug, thumbnail, price, discount, discount_price, pricing_type, status,
         featured, unlimited_inventory, inventory, views, summary, description,
-        instructor_id, product_category_id, created_at, updated_at
+        instructor_id, product_category_id, product_category_child_id, created_at, updated_at
       ) VALUES (
         @title, @slug, @thumbnail, @price, @discount, @discount_price, @pricing_type, @status,
         @featured, @unlimited_inventory, @inventory, 0, @summary, @description,
-        @instructor_id, @product_category_id, datetime('now'), datetime('now')
+        @instructor_id, @product_category_id, @product_category_child_id, datetime('now'), datetime('now')
       )
     `)
     const result = stmt.run({
@@ -306,6 +372,7 @@ export const productRepository = {
       description: product.description || null,
       instructor_id: product.instructor_id || 1,
       product_category_id: product.product_category_id || 1,
+      product_category_child_id: product.product_category_child_id || null,
     })
     return Number(result.lastInsertRowid)
   },
@@ -316,13 +383,17 @@ export const productRepository = {
 
     const updatableKeys: (keyof ProductRecord)[] = [
       'title', 'slug', 'pricing_type', 'price', 'discount', 'discount_price',
-      'thumbnail', 'summary', 'description', 'status', 'featured', 'inventory', 'unlimited_inventory'
+      'thumbnail', 'summary', 'description', 'status', 'featured', 'inventory', 'unlimited_inventory',
+      'product_category_id', 'product_category_child_id',
+      'meta_title', 'meta_keywords', 'meta_description', 'og_title', 'og_description'
     ]
 
     for (const key of updatableKeys) {
       if (product[key] !== undefined) {
         fields.push(`${String(key)} = @${String(key)}`)
-        params[key] = product[key]
+        let val = product[key]
+        if (typeof val === 'boolean') val = val ? 1 : 0
+        params[key] = val
       }
     }
 

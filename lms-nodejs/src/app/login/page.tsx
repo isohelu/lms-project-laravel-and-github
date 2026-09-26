@@ -53,10 +53,12 @@ export default function LoginPage() {
         router.push(redirectUrl)
       } else if (data.redirect) {
         router.push(data.redirect)
-      } else if (role === 'admin' || role === 'instructor') {
-        router.push('/dashboard')
+      } else if (role === 'admin') {
+        router.push('/admin/dashboard')
+      } else if (role === 'instructor') {
+        router.push('/instructor/dashboard')
       } else {
-        router.push('/student/courses')
+        router.push('/student/dashboard')
       }
       router.refresh()
     } catch {

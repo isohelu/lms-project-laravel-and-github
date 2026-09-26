@@ -10,10 +10,13 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12', 10)))
     const offset = (page - 1) * limit
 
+    const statusParam = searchParams.get('status')
+    const status = statusParam === 'all' ? undefined : (statusParam || 'published')
+
     const result = blogRepository.listAll({
       categorySlug: category,
       search,
-      status: 'published',
+      status,
       limit,
       offset
     })
@@ -47,6 +50,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Title and description are required' }, { status: 400 })
     }
 
+    const { saveBase64Image } = await import('@/lib/upload-utils')
+    const finalThumbnail = saveBase64Image(thumbnail, 'blog')
+
     const finalSlug = slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     const newId = blogRepository.create({
       userId: user.id,
@@ -54,7 +60,7 @@ export async function POST(req: NextRequest) {
       slug: finalSlug,
       description,
       blogCategoryId: category_id ? Number(category_id) : 1,
-      thumbnail
+      thumbnail: finalThumbnail || undefined
     })
 
     return NextResponse.json({

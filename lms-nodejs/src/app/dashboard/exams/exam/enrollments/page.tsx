@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   HelpCircle
 } from 'lucide-react'
+import Breadcrumbs from '@/components/breadcrumbs'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
@@ -53,20 +54,16 @@ export default function ExamEnrollmentsPage() {
 
   return (
     <DashboardLayout>
+      <Breadcrumbs
+        title="Exam Enrollments"
+        breadcrumbs={[
+          { title: 'Dashboard', href: '/dashboard' },
+          { title: 'Exam Enrollments' },
+        ]}
+        className="mb-4"
+      />
+
       <div className="space-y-6">
-        <div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-            <span>/</span>
-            <Link href="/dashboard/exams" className="hover:text-foreground">Exams</Link>
-            <span>/</span>
-            <span className="text-foreground font-medium">Enrollments</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Exam Enrollments</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Monitor registered test-takers and examination entries.
-          </p>
-        </div>
 
         {/* Search */}
         <Card className="p-4 border-slate-200/80 shadow-xs">

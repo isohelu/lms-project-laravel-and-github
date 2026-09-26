@@ -1,13 +1,13 @@
 'use client'
 
 import React from 'react'
-import PayoutsView from '@/components/dashboard/views/PayoutsView'
+import PayoutSettingsView from '@/components/dashboard/views/PayoutSettingsView'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 
-export default function DashboardSubPage() {
+export default function DashboardPayoutSettingsPage() {
   return (
-    <DashboardLayout>
-      <PayoutsView />
+    <DashboardLayout role="instructor">
+      <PayoutSettingsView />
     </DashboardLayout>
   )
 }

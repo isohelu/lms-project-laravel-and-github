@@ -34,7 +34,7 @@ export default function VerifyEmailPage() {
         </div>
 
         {resendSuccess && (
-          <div className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+          <div className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-500">
             <CheckCircle2 className="h-4 w-4" />
             <span>A new verification link has been dispatched to your email.</span>
           </div>

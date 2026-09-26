@@ -36,7 +36,7 @@ export default function BlogCard({
       <CardHeader className="p-0">
         <div className="p-2.5 pb-0">
           <Link href={`/blogs/${blog.uuid || blog.slug}`}>
-            <div className="relative h-[190px] w-full overflow-hidden rounded-xl bg-muted">
+            <div className="relative h-47.5 w-full overflow-hidden rounded-xl bg-muted">
               <img
                 src={blog.thumbnail || '/assets/images/blank-image.jpg'}
                 alt={blog.title}
@@ -65,13 +65,13 @@ export default function BlogCard({
           </div>
 
           <Link href={`/blogs/${blog.uuid || blog.slug}`}>
-            <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground transition-colors group-hover:text-secondary-foreground min-h-[2.75rem]">
+            <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground transition-colors group-hover:text-secondary-foreground min-h-11">
               {blog.title}
             </h3>
           </Link>
 
           {blog.summary && (
-            <p className="mt-2 line-clamp-2 text-xs text-muted-foreground leading-relaxed min-h-[2.25rem]">
+            <p className="mt-2 line-clamp-2 text-xs text-muted-foreground leading-relaxed min-h-9">
               {blog.summary}
             </p>
           )}

@@ -10,6 +10,7 @@ export interface UserRecord {
   photo?: string | null
   google_id?: string | null
   instructor_id?: number | null
+  social_links?: string | null
   email_verified_at?: string | null
   created_at?: string | null
   updated_at?: string | null
@@ -18,14 +19,14 @@ export interface UserRecord {
 export const userRepository = {
   findByEmail(email: string): UserRecord | undefined {
     const stmt = db.prepare<[string], UserRecord>(
-      'SELECT id, name, role, password, email, status, photo, instructor_id, email_verified_at FROM users WHERE email = ? COLLATE NOCASE'
+      'SELECT id, name, role, password, email, status, photo, instructor_id, social_links, email_verified_at FROM users WHERE email = ? COLLATE NOCASE'
     )
     return stmt.get(email.trim())
   },
 
   findById(id: number): UserRecord | undefined {
     const stmt = db.prepare<[number], UserRecord>(
-      'SELECT id, name, role, email, status, photo, instructor_id, email_verified_at, created_at FROM users WHERE id = ?'
+      'SELECT id, name, role, email, status, photo, instructor_id, social_links, email_verified_at, created_at FROM users WHERE id = ?'
     )
     return stmt.get(id)
   },
@@ -36,11 +37,13 @@ export const userRepository = {
     password: string
     role?: 'student' | 'instructor' | 'admin'
     status?: number
+    photo?: string | null
+    instructor_id?: number | null
   }): UserRecord {
     const now = new Date().toISOString()
     const stmt = db.prepare(
-      `INSERT INTO users (name, email, password, role, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO users (name, email, password, role, status, photo, instructor_id, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     const result = stmt.run(
       user.name,
@@ -48,6 +51,8 @@ export const userRepository = {
       user.password,
       user.role || 'student',
       user.status ?? 1,
+      user.photo || null,
+      user.instructor_id || null,
       now,
       now
     )
@@ -59,7 +64,7 @@ export const userRepository = {
     const values: (string | number | null)[] = []
 
     for (const [key, value] of Object.entries(updates)) {
-      if (['name', 'email', 'role', 'status', 'photo', 'password'].includes(key)) {
+      if (['name', 'email', 'role', 'status', 'photo', 'password', 'instructor_id', 'social_links'].includes(key)) {
         fields.push(`${key} = ?`)
         values.push(value as string | number | null)
       }

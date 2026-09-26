@@ -20,11 +20,19 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
-export default function AdminPayoutsPage() {
+interface AdminPayoutsProps {
+  defaultStatus?: 'All' | 'pending' | 'completed'
+  pageTitle?: string
+}
+
+export default function AdminPayoutsPage({
+  defaultStatus = 'All',
+  pageTitle = 'Instructor Payout Governance'
+}: AdminPayoutsProps) {
   const [payouts, setPayouts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<'All' | 'pending' | 'completed'>('All')
+  const [filterStatus, setFilterStatus] = useState<'All' | 'pending' | 'completed'>(defaultStatus)
 
   const loadPayouts = async () => {
     try {
@@ -88,7 +96,7 @@ export default function AdminPayoutsPage() {
               <Link href="/dashboard" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
-              <h1 className="text-2xl font-bold text-foreground">Instructor Payout Governance</h1>
+              <h1 className="text-2xl font-bold text-foreground">{pageTitle}</h1>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               Review educator earnings withdrawal requests, verify tax accounts, and process bank wires.

@@ -42,7 +42,7 @@ export default function CourseCard2({ course, className }: CourseCard2Props) {
       <CardHeader className="p-0">
         <div className="relative">
           <Link href={`/courses/details/${course.slug}/${course.id}`}>
-            <div className="relative h-[280px] w-full overflow-hidden rounded-t-lg">
+            <div className="relative h-70 w-full overflow-hidden rounded-t-lg">
               <img
                 src={course.thumbnail || '/assets/images/blank-image.jpg'}
                 alt={course.title}

@@ -1,5 +1,8 @@
-import { redirect } from 'next/navigation'
+'use client'
 
-export default function AdminDashboardRedirect() {
-  redirect('/dashboard')
+import React from 'react'
+import AdminDashboardView from '@/components/dashboard/AdminDashboardView'
+
+export default function AdminDashboardPage() {
+  return <AdminDashboardView />
 }

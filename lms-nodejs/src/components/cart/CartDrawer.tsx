@@ -176,7 +176,7 @@ export default function CartDrawer() {
               </div>
 
               {couponSuccess && (
-                <div className="flex items-center justify-between rounded-lg bg-emerald-500/10 p-2 text-xs text-emerald-600 dark:text-emerald-400">
+                <div className="flex items-center justify-between rounded-lg bg-emerald-500/10 p-2 text-xs text-emerald-500">
                   <span className="flex items-center gap-1">
                     <Check className="h-3.5 w-3.5" /> Coupon &ldquo;{appliedCoupon}&rdquo; applied!
                   </span>

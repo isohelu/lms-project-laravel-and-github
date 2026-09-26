@@ -153,7 +153,7 @@ export default function ExamsPage() {
       <div className="container mx-auto px-4 mt-8">
         <div className="flex flex-col lg:flex-row items-start gap-8">
           {/* Desktop Filter Sidebar */}
-          <aside className="hidden lg:block w-72 flex-shrink-0 space-y-6 rounded-2xl border border-border bg-card p-6 shadow-sm sticky top-24">
+          <aside className="hidden lg:block w-72 shrink-0 space-y-6 rounded-2xl border border-border bg-card p-6 shadow-sm sticky top-24">
             <div className="flex items-center justify-between pb-4 border-b border-border">
               <h2 className="text-base font-bold text-foreground">Filter Exams</h2>
               <Button

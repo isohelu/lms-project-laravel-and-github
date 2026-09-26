@@ -28,17 +28,17 @@ export default function AboutUsPage() {
       <InnerHero title="About Us" slug="about-us" />
 
       {/* 2. Hero Section: 2 Images + Mission & Value */}
-      <section className="container py-20 md:py-[120px]">
+      <section className="container py-20 md:py-30">
         <div className="relative z-10 flex flex-col items-center justify-between gap-12 md:flex-row md:gap-7">
           <div className="grid w-full grid-cols-1 gap-7 md:grid-cols-2 flex-1">
-            <div className="h-[356px]">
+            <div className="h-89">
               <img
                 src="/assets/images/team-1.jpg"
                 alt="Our Mission"
                 className="h-full w-full rounded-2xl object-cover object-center"
               />
             </div>
-            <div className="h-[356px]">
+            <div className="h-89">
               <img
                 src="/assets/images/team-2.jpg"
                 alt="Our Value"
@@ -47,7 +47,7 @@ export default function AboutUsPage() {
             </div>
           </div>
 
-          <div className="w-full space-y-7 md:max-w-[480px]">
+          <div className="w-full space-y-7 md:max-w-120">
             <div className="space-y-2">
               <h2 className="text-2xl font-bold md:text-[30px] text-foreground">
                 Our Mission
@@ -69,10 +69,10 @@ export default function AboutUsPage() {
       </section>
 
       {/* 3. Success Statistics Section */}
-      <div className="overflow-y-hidden bg-cover bg-center py-[120px]">
+      <div className="overflow-y-hidden bg-cover bg-center py-30">
         <section className="container relative">
           <div className="relative z-10 flex flex-col items-center justify-between gap-12 md:flex-row md:gap-7">
-            <div className="relative w-full space-y-7 md:max-w-[384px]">
+            <div className="relative w-full space-y-7 md:max-w-96">
               <div className="relative z-10 mb-6">
                 <h2 className="text-2xl font-bold md:text-[30px] text-foreground leading-tight">
                   Our Success Depends on Our Students Success
@@ -85,7 +85,7 @@ export default function AboutUsPage() {
               <div>
                 <Link
                   href="/courses/all"
-                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all px-5 py-2.5 bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90 cursor-pointer shadow-none"
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all px-5 py-2.5 bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer shadow-none!"
                 >
                   Browse Courses
                 </Link>
@@ -114,21 +114,21 @@ export default function AboutUsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 flex-1">
-              <div className="h-[400px]">
+              <div className="h-100">
                 <img
                   src="/assets/images/students-1.jpg"
                   alt="Active Students"
                   className="h-full w-full rounded-2xl object-cover object-center"
                 />
               </div>
-              <div className="h-[400px]">
+              <div className="h-100">
                 <img
                   src="/assets/images/students-2.jpg"
                   alt="Best Courses"
                   className="h-full w-full rounded-2xl object-cover object-center"
                 />
               </div>
-              <div className="h-[400px]">
+              <div className="h-100">
                 <img
                   src="/assets/images/students-3.jpg"
                   alt="Active Users"
@@ -138,15 +138,15 @@ export default function AboutUsPage() {
             </div>
           </div>
 
-          <div className="after:pointer-events-none after:absolute after:bottom-0 after:left-0 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(0,120,103,1)] after:blur-[200px] after:content-['']" />
-          <div className="after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-[240px] after:w-[240px] after:rounded-full after:bg-[rgba(97,95,255,1)] after:blur-[200px] after:content-['']" />
+          <div className="after:pointer-events-none after:absolute after:bottom-0 after:left-0 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(0,120,103,1)] after:blur-[200px] after:content-['']" />
+          <div className="after:pointer-events-none after:absolute after:top-0 after:right-0 after:h-60 after:w-60 after:rounded-full after:bg-[rgba(97,95,255,1)] after:blur-[200px] after:content-['']" />
         </section>
       </div>
 
       {/* 4. Team Section */}
-      <section className="container py-20 md:py-[120px]">
+      <section className="container py-20 md:py-30">
         <div className="flex flex-col items-center justify-between gap-12 md:flex-row md:gap-7">
-          <div className="relative w-full space-y-7 md:max-w-[384px]">
+          <div className="relative w-full space-y-7 md:max-w-96">
             <h2 className="text-2xl font-bold md:text-[30px] text-foreground">
               The Minds Behind the Mission
             </h2>
@@ -159,14 +159,14 @@ export default function AboutUsPage() {
             {teamMembers.map((member, index) => (
               <div
                 key={index}
-                className="group relative h-[192px] overflow-hidden rounded-lg"
+                className="group relative h-48 overflow-hidden rounded-lg"
               >
                 <img
                   src={member.image}
                   alt={member.name}
                   className="h-full w-full rounded-lg object-cover object-center"
                 />
-                <div className="absolute bottom-0 left-1/2 flex h-full w-full -translate-x-1/2 flex-col justify-end bg-gradient-to-t from-primary p-4 text-center opacity-0 transition-all duration-200 group-hover:opacity-100 dark:from-primary-foreground">
+                <div className="absolute bottom-0 left-1/2 flex h-full w-full -translate-x-1/2 flex-col justify-end bg-linear-to-t from-black/80 to-transparent p-4 text-center opacity-0 transition-all duration-200 group-hover:opacity-100">
                   <p className="font-semibold text-white">{member.name}</p>
                   <p className="text-xs text-white">{member.role}</p>
                 </div>

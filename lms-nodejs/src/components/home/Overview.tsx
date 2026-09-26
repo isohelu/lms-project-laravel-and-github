@@ -41,7 +41,7 @@ export default function Overview() {
           return (
             <div
               key={index}
-              className={`rounded-3xl border-none ${stat.bgColor} px-6 py-10 !shadow-none transition-transform duration-300 hover:-translate-y-1 md:py-12`}
+              className={`rounded-3xl border-none ${stat.bgColor} px-6 py-10 shadow-none! transition-transform duration-300 hover:-translate-y-1 md:py-12`}
             >
               <div
                 className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${stat.iconBg} text-white shadow-md`}

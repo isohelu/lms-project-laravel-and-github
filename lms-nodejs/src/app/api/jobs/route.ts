@@ -1,17 +1,27 @@
 import { NextResponse } from 'next/server'
 import db from '@/lib/db'
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const jobs = db.prepare(`
-      SELECT id, uuid, title, slug, experience_level, location,
-             salary_min, salary_max, salary_currency, salary_negotiable,
-             application_deadline, positions_available, job_type, work_type,
-             skills_required, created_at
-      FROM job_circulars
-      WHERE status = 'published'
-      ORDER BY id DESC
-    `).all() as { skills_required?: string; [key: string]: unknown }[]
+    const { searchParams } = new URL(req.url)
+    const showAll = searchParams.get('all') === 'true'
+
+    const sql = showAll
+      ? `SELECT id, uuid, title, slug, experience_level, location,
+                salary_min, salary_max, salary_currency, salary_negotiable,
+                application_deadline, positions_available, job_type, work_type,
+                skills_required, status, created_at
+         FROM job_circulars
+         ORDER BY id DESC`
+      : `SELECT id, uuid, title, slug, experience_level, location,
+                salary_min, salary_max, salary_currency, salary_negotiable,
+                application_deadline, positions_available, job_type, work_type,
+                skills_required, status, created_at
+         FROM job_circulars
+         WHERE status IN ('published', 'active')
+         ORDER BY id DESC`
+
+    const jobs = db.prepare(sql).all() as { skills_required?: string; [key: string]: unknown }[]
 
     const formatted = jobs.map(j => {
       let skills: string[] = []

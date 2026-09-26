@@ -74,7 +74,7 @@ export const blogRepository = {
     const listStmt = db.prepare(
       `SELECT b.*,
               cat.name as category_name, cat.slug as category_slug,
-              u.name as author_name, u.photo as author_photo,
+              u.name as author_name, u.email as author_email, u.photo as author_photo,
               (SELECT COUNT(*) FROM blog_comments bc WHERE bc.blog_id = b.id) as comments_count
        FROM blogs b
        LEFT JOIN blog_categories cat ON b.blog_category_id = cat.id
@@ -160,5 +160,49 @@ export const blogRepository = {
       data.status || 'published'
     )
     return Number(res.lastInsertRowid)
+  },
+
+  findById(id: number): BlogRecord | null {
+    const stmt = db.prepare(
+      `SELECT b.*,
+              cat.name as category_name, cat.slug as category_slug,
+              u.name as author_name, u.photo as author_photo,
+              (SELECT COUNT(*) FROM blog_comments bc WHERE bc.blog_id = b.id) as comments_count
+       FROM blogs b
+       LEFT JOIN blog_categories cat ON b.blog_category_id = cat.id
+       LEFT JOIN users u ON b.user_id = u.id
+       WHERE b.id = ? LIMIT 1`
+    )
+    return (stmt.get(id) as BlogRecord) || null
+  },
+
+  update(id: number, data: Partial<BlogRecord>): boolean {
+    const fields: string[] = []
+    const params: Record<string, unknown> = { id }
+
+    const updatableKeys: (keyof BlogRecord)[] = [
+      'title', 'slug', 'description', 'thumbnail', 'banner', 'keywords', 'status', 'blog_category_id'
+    ]
+
+    for (const key of updatableKeys) {
+      if (data[key] !== undefined) {
+        fields.push(`${String(key)} = @${String(key)}`)
+        params[key] = data[key]
+      }
+    }
+
+    if (fields.length === 0) return false
+
+    fields.push("updated_at = datetime('now')")
+    const sql = `UPDATE blogs SET ${fields.join(', ')} WHERE id = @id`
+    const stmt = db.prepare(sql)
+    const result = stmt.run(params)
+    return result.changes > 0
+  },
+
+  delete(id: number): boolean {
+    const stmt = db.prepare('DELETE FROM blogs WHERE id = ?')
+    const result = stmt.run(id)
+    return result.changes > 0
   }
 }

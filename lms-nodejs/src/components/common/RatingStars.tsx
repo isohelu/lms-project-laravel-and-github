@@ -38,7 +38,7 @@ export default function RatingStars({ rating, starClass, wrapperClass }: Props) 
   }
 
   return (
-    <div className={cn('flex items-center gap-[1px]', wrapperClass)}>
+    <div className={cn('flex items-center gap-px', wrapperClass)}>
       {renderRatingStars(rating)}
     </div>
   )

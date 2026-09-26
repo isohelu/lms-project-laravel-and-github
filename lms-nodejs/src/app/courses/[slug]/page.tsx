@@ -407,7 +407,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
           <span>/</span>
           <Link href="/courses/all" className="hover:text-foreground">Courses</Link>
           <span>/</span>
-          <span className="text-foreground font-medium truncate max-w-[280px]">
+          <span className="text-foreground font-medium truncate max-w-70">
             {course.title}
           </span>
         </div>
@@ -489,31 +489,31 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
                 <TabsList className="h-12 bg-transparent gap-2 p-0">
                   <TabsTrigger
                     value="overview"
-                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                   >
                     Overview
                   </TabsTrigger>
                   <TabsTrigger
                     value="curriculum"
-                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                   >
                     Curriculum
                   </TabsTrigger>
                   <TabsTrigger
                     value="details"
-                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                   >
                     Requirements & Outcomes
                   </TabsTrigger>
                   <TabsTrigger
                     value="instructor"
-                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                   >
                     Instructor
                   </TabsTrigger>
                   <TabsTrigger
                     value="reviews"
-                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-active:border-primary data-active:bg-transparent data-active:text-foreground"
+                    className="h-12 rounded-none border-b-2 border-transparent px-4 font-semibold text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground"
                   >
                     Reviews ({course.reviews_count})
                   </TabsTrigger>

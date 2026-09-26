@@ -94,10 +94,12 @@ export async function POST(req: NextRequest) {
 
     await setSessionCookie(sessionUser, remember)
 
-    // Compute Laravel 1:1 redirect route
-    let defaultRedirect = '/student/courses'
-    if (user.role === 'admin' || user.role === 'instructor') {
-      defaultRedirect = '/dashboard'
+    // Compute role-specific redirect route
+    let defaultRedirect = '/student/dashboard'
+    if (user.role === 'admin') {
+      defaultRedirect = '/admin/dashboard'
+    } else if (user.role === 'instructor') {
+      defaultRedirect = '/instructor/dashboard'
     }
 
     return NextResponse.json({

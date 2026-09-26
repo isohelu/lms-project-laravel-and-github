@@ -37,15 +37,15 @@ interface PendingWithdrawalsCardProps {
 export default function PendingWithdrawalsCard({
   title = 'Latest Pending Withdrawal Request',
   withdrawals = [],
-  viewAllHref = '/admin/payouts'
+  viewAllHref = '/dashboard/billings/payouts'
 }: PendingWithdrawalsCardProps) {
   return (
-    <Card className="flex flex-col justify-between rounded-2xl border border-slate-100 bg-white shadow-xs">
+    <Card className="flex flex-col justify-between rounded-xl border border-border/60 bg-card shadow-xs">
       <div className="flex items-center justify-between gap-4 p-5 sm:p-6 pb-4">
-        <h3 className="text-lg font-medium text-slate-900 tracking-tight">
+        <h3 className="text-lg font-medium text-foreground">
           {title}
         </h3>
-        <Button asChild variant="outline" size="sm" className="rounded-xl text-xs font-semibold">
+        <Button asChild variant="outline" size="sm" className="rounded-lg text-xs font-semibold">
           <Link href={viewAllHref}>
             View All
           </Link>

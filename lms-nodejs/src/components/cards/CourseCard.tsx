@@ -45,7 +45,7 @@ export default function CourseCard({ course, className }: CourseCardProps) {
       <CardHeader className="p-0">
         <div className="relative p-2.5 pb-0">
           <Link href={`/courses/${course.slug}`}>
-            <div className="relative h-[190px] w-full overflow-hidden rounded-xl bg-muted">
+            <div className="relative h-47.5 w-full overflow-hidden rounded-xl bg-muted">
               <img
                 src={course.thumbnail || '/assets/images/blank-image.jpg'}
                 alt={course.title}
@@ -82,7 +82,7 @@ export default function CourseCard({ course, className }: CourseCardProps) {
 
           {/* Course Title */}
           <Link href={`/courses/${course.slug}`}>
-            <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground transition-colors group-hover:text-secondary-foreground min-h-[2.75rem]">
+            <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground transition-colors group-hover:text-secondary-foreground min-h-11">
               {course.title}
             </h3>
           </Link>

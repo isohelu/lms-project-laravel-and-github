@@ -17,7 +17,7 @@ interface CategoryCard3Props {
 export default function CategoryCard3({ category, className }: CategoryCard3Props) {
   return (
     <Link href={`/courses?category=${category.slug}`} className="block">
-      <Card className={cn('flex flex-col justify-center h-[110px] gap-2 rounded-2xl border border-border/80 bg-card px-8 py-5 shadow-none transition-all duration-300 hover:shadow-card hover:border-primary/40', className)}>
+      <Card className={cn('flex flex-col justify-center h-27.5 gap-2 rounded-2xl border border-border/80 bg-card px-8 py-5 shadow-none transition-all duration-300 hover:shadow-card hover:border-primary/40', className)}>
         <p className="text-lg font-semibold text-foreground truncate">{category.title}</p>
         <p className="text-sm text-muted-foreground">
           {category.courses_count ?? 12} Courses

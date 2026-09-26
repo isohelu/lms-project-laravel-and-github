@@ -25,9 +25,9 @@ export default function CourseCardList({
       )}
     >
       {/* Thumbnail */}
-      <div className="relative sm:w-[280px] shrink-0 p-3 pb-0 sm:pb-3">
+      <div className="relative sm:w-70 shrink-0 p-3 pb-0 sm:pb-3">
         <Link href={`/courses/${course.slug}`}>
-          <div className="relative h-[200px] sm:h-full w-full overflow-hidden rounded-xl bg-muted">
+          <div className="relative h-50 sm:h-full w-full overflow-hidden rounded-xl bg-muted">
             <img
               src={course.thumbnail || '/assets/images/blank-image.jpg'}
               alt={course.title}

@@ -2,43 +2,65 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import {
-  PlusCircle,
-  Search,
-  Filter,
-  Edit,
-  Trash2,
-  Eye,
-  BookOpen,
-  Users,
-  Loader2,
-  CheckCircle2,
-  AlertCircle
-} from 'lucide-react'
+import { Plus, ArrowUpDown, Eye, ChevronsUpDown, Loader2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import Breadcrumbs from '@/components/breadcrumbs'
+import TableFilter from '@/components/table/table-filter'
+import TableFooter from '@/components/table/table-footer'
+import ActionsDropdown from '@/components/actions-dropdown'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export default function DashboardManageCoursesPage() {
   const [courses, setCourses] = useState<any[]>([])
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+  const [sortField, setSortField] = useState<'name' | 'price' | null>(null)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   const loadCourses = async () => {
     try {
       setLoading(true)
-      const res = await fetch('/api/instructor/courses')
+      const queryParams = new URLSearchParams({
+        page: String(currentPage),
+        limit: String(pageSize),
+        status: statusFilter,
+      })
+      if (search.trim()) {
+        queryParams.set('search', search.trim())
+      }
+
+      const res = await fetch(`/api/courses?${queryParams.toString()}`)
       if (res.ok) {
         const data = await res.json()
         if (data.courses) {
           setCourses(data.courses)
+          setTotal(data.total || 0)
         }
       }
     } catch (err) {
       console.error('Error loading courses:', err)
+      toast.error('Failed to load courses')
     } finally {
       setLoading(false)
     }
@@ -46,192 +68,291 @@ export default function DashboardManageCoursesPage() {
 
   useEffect(() => {
     loadCourses()
-  }, [])
+  }, [currentPage, pageSize, statusFilter, search])
 
-  const toggleStatus = async (courseId: number, currentStatus: string) => {
-    const nextStatus = currentStatus === 'published' ? 'draft' : 'published'
+  const handleDeleteCourse = async (courseId: number) => {
     try {
-      const res = await fetch(`/api/admin/courses/${courseId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus })
+      const res = await fetch(`/api/courses/${courseId}`, {
+        method: 'DELETE',
       })
-      if (res.ok) {
-        setCourses(prev =>
-          prev.map(c => (c.id === courseId ? { ...c, status: nextStatus } : c))
-        )
+      const data = await res.json()
+      if (res.ok && data.success) {
+        toast.success('Course deleted successfully')
+        loadCourses()
+      } else {
+        toast.error(data.message || 'Failed to delete course')
       }
     } catch (err) {
-      console.error('Failed to toggle course status:', err)
+      console.error('Failed to delete course:', err)
+      toast.error('Failed to delete course')
     }
   }
 
-  const filtered = courses.filter((c) => {
-    const matchesSearch = c.title && c.title.toLowerCase().includes(search.toLowerCase())
-    const matchesFilter = filterStatus === 'all' || c.status === filterStatus
-    return matchesSearch && matchesFilter
+  const toggleSort = (field: 'name' | 'price') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortOrder('asc')
+    }
+  }
+
+  const sortedCourses = [...courses].sort((a, b) => {
+    if (!sortField) return 0
+    if (sortField === 'name') {
+      const nameA = (a.instructor_name || '').toLowerCase()
+      const nameB = (b.instructor_name || '').toLowerCase()
+      return sortOrder === 'asc'
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA)
+    }
+    if (sortField === 'price') {
+      const priceA = Number(a.price || 0)
+      const priceB = Number(b.price || 0)
+      return sortOrder === 'asc' ? priceA - priceB : priceB - priceA
+    }
+    return 0
   })
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb & Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-              <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-              <span>/</span>
-              <span className="text-foreground font-medium">Courses</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Manage Courses</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Review, edit, and publish your course curriculum catalog.
-            </p>
-          </div>
-
-          <Button asChild className="rounded-xl font-semibold gap-2 shadow-xs bg-[#007867] hover:bg-[#007867]/90 text-white">
+      <Breadcrumbs
+        title="Courses"
+        breadcrumbs={[
+          { title: 'Dashboard', href: '/dashboard' },
+          { title: 'Courses' },
+        ]}
+        action={
+          <Button asChild className="h-9 px-4">
             <Link href="/dashboard/courses/create">
-              <PlusCircle className="h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Create Course
             </Link>
           </Button>
-        </div>
+        }
+        className="mb-4"
+      />
 
-        {/* Controls Card */}
-        <Card className="p-4 border-slate-200/80 shadow-xs">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search courses..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 text-xs bg-background"
-              />
-            </div>
+      <Card>
+        <TableFilter
+          title="Course List"
+          search={search}
+          onSearchChange={(val) => {
+            setSearch(val)
+            setCurrentPage(1)
+          }}
+          pageSize={pageSize}
+          onPageSizeChange={(val) => {
+            setPageSize(val)
+            setCurrentPage(1)
+          }}
+          tablePageSizes={[10, 15, 20, 25]}
+        />
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="bg-background border border-slate-200 rounded-lg text-xs font-medium px-3 py-2 text-foreground focus:outline-none focus:ring-1 focus:ring-[#007867]"
-              >
-                <option value="all">All Statuses</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-              </select>
-            </div>
-          </div>
-        </Card>
+        <Table className="border-y border-border">
+          <TableHeader>
+            <TableRow>
+              {/* Instructor */}
+              <TableHead>
+                <Button
+                  variant="ghost"
+                  className="ml-1 hover:bg-transparent font-semibold"
+                  onClick={() => toggleSort('name')}
+                >
+                  Name
+                  <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
+                </Button>
+              </TableHead>
 
-        {/* Courses Table */}
-        <Card className="border-slate-200/80 shadow-xs overflow-hidden">
-          {loading ? (
-            <div className="py-20 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-[#007867] mx-auto mb-2" />
-              <p className="text-xs text-muted-foreground font-medium">Loading courses catalog...</p>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="p-16 text-center">
-              <BookOpen className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-foreground">No courses found</p>
-              <p className="text-xs text-muted-foreground mt-1 mb-4">Try adjusting your filters or create a new course.</p>
-              <Button asChild size="sm" className="bg-[#007867] hover:bg-[#007867]/90 text-white">
-                <Link href="/dashboard/courses/create">Create Course</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50/50 text-slate-500 uppercase tracking-wider font-semibold">
-                    <th className="py-3 px-4">Course</th>
-                    <th className="py-3 px-4">Price</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Enrollments</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filtered.map((course) => {
-                    const isPublished = course.status === 'published'
-                    return (
-                      <tr key={course.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-14 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200/60">
-                              {course.thumbnail ? (
-                                <img src={course.thumbnail} alt="" className="h-full w-full object-cover" />
-                              ) : (
-                                <div className="h-full w-full flex items-center justify-center text-slate-400">
-                                  <BookOpen className="h-4 w-4" />
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-semibold text-foreground line-clamp-1">{course.title}</p>
-                              <p className="text-[11px] text-muted-foreground">ID: #{course.id}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 font-semibold text-foreground">
-                          {course.price ? `$${course.price}` : 'Free'}
-                        </td>
-                        <td className="py-3 px-4 text-muted-foreground">
-                          {course.category?.name || course.category || 'General'}
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-1.5 text-muted-foreground">
-                            <Users className="h-3.5 w-3.5" />
-                            <span>{course.enrollments_count || 0}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge
-                            variant="secondary"
-                            className={
-                              isPublished
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                : 'bg-amber-50 text-amber-700 border-amber-200'
-                            }
-                          >
-                            {isPublished ? 'Published' : 'Draft'}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleStatus(course.id, course.status)}
-                              className="h-8 px-2 text-xs font-medium text-muted-foreground hover:text-foreground"
-                            >
-                              {isPublished ? 'Unpublish' : 'Publish'}
-                            </Button>
-                            <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                              <Link href={`/courses/${course.slug || course.id}`}>
-                                <Eye className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                              <Link href={`/dashboard/courses/create?edit=${course.id}`}>
-                                <Edit className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-      </div>
+              {/* Course Title */}
+              <TableHead className="font-semibold">Course Title</TableHead>
+
+              {/* Status Filter */}
+              <TableHead className="text-center font-semibold">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="text-muted-foreground capitalize h-8 gap-1 mx-auto"
+                    >
+                      <span>{statusFilter === 'all' ? 'Status' : statusFilter}</span>
+                      <ChevronsUpDown className="h-3 w-3 text-muted-foreground" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="min-w-25">
+                    {['all', 'published', 'draft', 'archived'].map((st) => (
+                      <DropdownMenuItem
+                        key={st}
+                        onClick={() => {
+                          setStatusFilter(st)
+                          setCurrentPage(1)
+                        }}
+                        className={cn(
+                          'cursor-pointer text-center capitalize justify-center',
+                          statusFilter === st && 'bg-primary/10 text-primary font-bold'
+                        )}
+                      >
+                        {st}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableHead>
+
+              {/* Category */}
+              <TableHead className="text-center font-semibold">Category</TableHead>
+
+              {/* Category Child */}
+              <TableHead className="text-center font-semibold whitespace-nowrap">
+                Category Child
+              </TableHead>
+
+              {/* Price */}
+              <TableHead className="text-center font-semibold">
+                <Button
+                  variant="ghost"
+                  className="hover:bg-transparent font-semibold mx-auto"
+                  onClick={() => toggleSort('price')}
+                >
+                  Price
+                  <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
+                </Button>
+              </TableHead>
+
+              {/* Assignments */}
+              <TableHead className="text-center font-semibold">Assignments</TableHead>
+
+              {/* Actions */}
+              <TableHead className="pr-4 text-end font-semibold">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="h-32 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span className="text-muted-foreground text-sm">Loading courses...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : sortedCourses.length > 0 ? (
+              sortedCourses.map((course) => (
+                <TableRow key={course.id}>
+                  {/* Instructor */}
+                  <TableCell>
+                    <div className="pl-4">
+                      <p className="mb-0.5 text-base font-medium">
+                        {course.instructor_name || 'Admin Instructor'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {course.instructor_email || 'instructor@example.com'}
+                      </p>
+                    </div>
+                  </TableCell>
+
+                  {/* Course Title */}
+                  <TableCell>
+                    <div className="py-1 capitalize font-medium">
+                      <Link
+                        href={`/dashboard/courses/${course.id}`}
+                        className="hover:text-primary transition-colors"
+                      >
+                        {course.title}
+                      </Link>
+                    </div>
+                  </TableCell>
+
+                  {/* Status */}
+                  <TableCell>
+                    <div className="py-1 text-center capitalize text-sm">
+                      {course.status || 'draft'}
+                    </div>
+                  </TableCell>
+
+                  {/* Category */}
+                  <TableCell>
+                    <div className="py-1 text-center capitalize text-sm">
+                      <p>{course.category_title || '--'}</p>
+                    </div>
+                  </TableCell>
+
+                  {/* Category Child */}
+                  <TableCell>
+                    <div className="py-1 text-center capitalize text-sm">
+                      <p>{course.category_child_title || '--'}</p>
+                    </div>
+                  </TableCell>
+
+                  {/* Price */}
+                  <TableCell>
+                    <div className="py-1 text-center capitalize text-sm">
+                      <p>
+                        {course.price && Number(course.price) > 0
+                          ? `$${Number(course.price).toFixed(2)}`
+                          : 'Free'}
+                      </p>
+                    </div>
+                  </TableCell>
+
+                  {/* Assignments Count */}
+                  <TableCell>
+                    <div className="py-1 text-center">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/dashboard/courses/${course.id}/assignments`}>
+                          <Eye className="mr-1 h-3.5 w-3.5" />
+                          {course.assignments_count || 0}{' '}
+                          {(course.assignments_count || 0) === 1
+                            ? 'Assignment'
+                            : 'Assignments'}
+                        </Link>
+                      </Button>
+                    </div>
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell>
+                    <div className="flex justify-end py-1 pr-4">
+                      <ActionsDropdown
+                        className="max-w-36"
+                        routes={[
+                          {
+                            label: 'Edit',
+                            method: 'get',
+                            route: `/dashboard/courses/${course.id}`,
+                          },
+                          {
+                            label: 'Delete',
+                            method: 'delete',
+                            route: `/api/courses/${course.id}`,
+                            message:
+                              'Are you sure you want to delete this course? This action cannot be undone.',
+                          },
+                        ]}
+                        onDeleteSuccess={loadCourses}
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
+                  No courses found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        <TableFooter
+          currentPage={currentPage}
+          total={total}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+        />
+      </Card>
     </DashboardLayout>
   )
 }

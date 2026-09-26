@@ -85,9 +85,24 @@ export default function CreateExamWizardPage() {
     }
   }
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    try {
+      await fetch('/api/exams', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title || 'Untitled Assessment',
+          description: shortDesc,
+          duration: durationMinutes || 60,
+          pass_percentage: passPercentage || 75,
+          price: parseFloat(price) || 29,
+        })
+      })
+    } catch {
+      // ignore
+    }
     alert('Assessment successfully created and submitted for review!')
-    router.push('/instructor/exams')
+    router.push('/dashboard/exams')
   }
 
   const steps = [

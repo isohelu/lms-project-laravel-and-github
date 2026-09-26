@@ -121,7 +121,7 @@ function AuthForm() {
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md rounded-2xl border border-border/80 bg-card/80 backdrop-blur-xl shadow-2xl p-2">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 shadow-lg shadow-indigo-500/30 mb-2">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-linear-to-tr from-violet-600 to-indigo-600 shadow-lg shadow-indigo-500/30 mb-2">
             <Sparkles className="size-6 text-white" />
           </div>
           <CardTitle className="text-2xl font-black tracking-tight text-foreground">
@@ -245,7 +245,7 @@ function AuthForm() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-xs mt-2"
+                  className="w-full rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 text-white font-bold text-xs mt-2"
                 >
                   {loading ? 'Creating Account...' : 'Register'}
                   <ArrowRight className="size-3.5 ml-1.5" />

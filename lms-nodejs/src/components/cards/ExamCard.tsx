@@ -65,11 +65,11 @@ export default function ExamCard({ exam, viewType = 'grid', className }: ExamCar
       )}
     >
       {/* Thumbnail */}
-      <div className={cn('relative p-2.5 pb-0', isList && 'sm:w-72 sm:pb-2.5 sm:pr-0 flex-shrink-0')}>
+      <div className={cn('relative p-2.5 pb-0', isList && 'sm:w-72 sm:pb-2.5 sm:pr-0 shrink-0')}>
         <Link href={`/exams/${exam.slug}`}>
           <div className={cn(
             'relative w-full overflow-hidden rounded-xl bg-muted',
-            isList ? 'h-48 sm:h-full min-h-[190px]' : 'h-48'
+            isList ? 'h-48 sm:h-full min-h-47.5' : 'h-48'
           )}>
             <img
               src={exam.thumbnail || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80'}
@@ -106,7 +106,7 @@ export default function ExamCard({ exam, viewType = 'grid', className }: ExamCar
           </div>
 
           <Link href={`/exams/${exam.slug}`} className="block mt-1.5">
-            <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors group-hover:text-primary min-h-[2.75rem]">
+            <h3 className="line-clamp-2 text-base font-bold text-foreground transition-colors group-hover:text-primary min-h-11">
               {exam.title}
             </h3>
           </Link>

@@ -34,7 +34,7 @@ export default function CourseCard3({ course, className, onEnroll }: CourseCard3
       <CardHeader className="p-0">
         <div className="relative p-2 pb-0">
           <Link href={`/courses/details/${course.slug}/${course.id}`}>
-            <div className="group relative h-[320px] w-full overflow-hidden rounded-lg">
+            <div className="group relative h-80 w-full overflow-hidden rounded-lg">
               <img
                 src={course.thumbnail || '/assets/images/blank-image.jpg'}
                 alt={course.title}
@@ -45,7 +45,7 @@ export default function CourseCard3({ course, className, onEnroll }: CourseCard3
                 }}
               />
 
-              <div className="absolute bottom-0 left-1/2 flex h-full w-full -translate-x-1/2 flex-col justify-end bg-gradient-to-t from-primary p-4 text-center text-white opacity-0 transition-all duration-200 group-hover:opacity-100">
+              <div className="absolute bottom-0 left-1/2 flex h-full w-full -translate-x-1/2 flex-col justify-end bg-linear-to-t from-primary p-4 text-center text-white opacity-0 transition-all duration-200 group-hover:opacity-100">
                 <h6 className="text-2xl font-semibold md:text-3xl line-clamp-2">
                   {course.title}
                 </h6>

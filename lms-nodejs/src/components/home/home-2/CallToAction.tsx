@@ -31,8 +31,8 @@ export default function Home2CallToAction() {
   return (
     <section className="relative overflow-hidden py-20">
       <div className="container mx-auto px-4">
-        <div className="relative z-10 mx-auto w-full max-w-[840px] rounded-3xl bg-[#007867] px-6 py-16 text-white md:px-12 md:py-20 shadow-2xl">
-          <div className="mx-auto w-full max-w-[480px] text-center">
+        <div className="relative z-10 mx-auto w-full max-w-210 rounded-3xl bg-[#007867] px-6 py-16 text-white md:px-12 md:py-20 shadow-2xl">
+          <div className="mx-auto w-full max-w-120 text-center">
             <h2 className="text-2xl font-bold leading-tight md:text-3xl md:leading-snug">
               Subscribe to Get the Latest Course Updates & Special Offers
             </h2>

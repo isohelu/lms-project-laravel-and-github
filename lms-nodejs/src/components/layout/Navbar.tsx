@@ -97,10 +97,10 @@ export default function Navbar({
       <div className="fixed top-0 z-30 w-full">
         <div
           className={cn(
-            'container mx-auto max-w-[1280px] mt-0 flex h-[72px] w-full items-center justify-between gap-1 !px-4 transition-all duration-200 md:gap-6',
+            'container mx-auto max-w-7xl mt-0 flex h-18 w-full items-center justify-between gap-1 px-4! transition-all duration-200 md:gap-6',
             isSticky &&
-              'mx-auto mt-4 h-16 w-full rounded-2xl bg-background shadow-card md:!max-w-6xl',
-            'max-md:mt-0 max-md:h-[72px] max-md:rounded-none max-md:w-full max-md:max-w-none',
+              'mx-auto mt-4 h-16 w-full rounded-2xl bg-background shadow-card md:max-w-6xl!',
+            'max-md:mt-0 max-md:h-18 max-md:rounded-none max-md:w-full max-md:max-w-none',
             isSticky && 'max-md:bg-background max-md:shadow-sm max-md:border-b max-md:border-border/50'
           )}
         >
@@ -138,7 +138,7 @@ export default function Navbar({
       />
 
       {heightCover && (
-        <div className="relative z-20 h-[72px] bg-transparent" />
+        <div className="relative z-20 h-18 bg-transparent" />
       )}
     </>
   )

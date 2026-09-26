@@ -49,8 +49,8 @@ export default function InstructorSpotlight() {
   return (
     <section className="relative overflow-hidden py-20 bg-background">
       {/* Glow Blur Orbs */}
-      <div className="pointer-events-none absolute top-1/2 left-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(97,95,255,0.12)] blur-[140px]" />
-      <div className="pointer-events-none absolute bottom-0 right-10 h-[240px] w-[240px] rounded-full bg-[rgba(0,167,111,0.1)] blur-[120px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(97,95,255,0.12)] blur-[140px]" />
+      <div className="pointer-events-none absolute bottom-0 right-10 h-60 w-60 rounded-full bg-[rgba(0,167,111,0.1)] blur-[120px]" />
 
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         {/* Section Heading */}

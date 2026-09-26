@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
     >
       {isSuccess ? (
         <div className="space-y-6 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
             <CheckCircle2 className="h-8 w-8" />
           </div>
           <div className="space-y-2">

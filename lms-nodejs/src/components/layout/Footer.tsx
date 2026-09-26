@@ -46,10 +46,10 @@ export default function Footer() {
 
   return (
     <footer className="overflow-hidden bg-[rgba(255,222,99,0.06)]">
-      <div className="container space-y-9 pt-[60px] pb-5">
+      <div className="container space-y-9 pt-15 pb-5">
         <div className="flex flex-col items-start justify-between gap-10 md:flex-row">
           {/* Logo & Description Column */}
-          <div className="w-full space-y-5 md:max-w-[300px]">
+          <div className="w-full space-y-5 md:max-w-75">
             <div>
               <Link href="/">
                 <AppLogo className="h-7" />
@@ -83,7 +83,7 @@ export default function Footer() {
           </div>
 
           {/* Links Columns */}
-          <div className="flex w-full flex-col justify-between gap-10 md:max-w-[640px] md:flex-row">
+          <div className="flex w-full flex-col justify-between gap-10 md:max-w-160 md:flex-row">
             {/* Company */}
             <div className="relative w-full">
               <p className="mb-3 text-lg font-semibold">Company</p>

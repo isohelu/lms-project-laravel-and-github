@@ -200,7 +200,7 @@ export default function TopCourses({
                   'cursor-pointer rounded-full transition-all duration-200',
                   currentSlide === index
                     ? 'h-2 w-4 bg-foreground'
-                    : 'h-2 w-2 bg-gray-300 dark:bg-gray-600'
+                    : 'h-2 w-2 bg-muted-foreground/30'
                 )}
                 onClick={() => api?.scrollTo(index)}
               />
@@ -231,8 +231,8 @@ export default function TopCourses({
       </div>
 
       {/* Decorative Radial Backgrounds matching Laravel Home-1 */}
-      <div className="pointer-events-none absolute -top-40 -right-60 h-[800px] w-[800px] rounded-full bg-[radial-gradient(circle,rgba(97,95,255,0.45)_0%,transparent_70%)] opacity-50" />
-      <div className="pointer-events-none absolute -bottom-60 -left-60 h-[800px] w-[800px] rounded-full bg-[radial-gradient(circle,rgba(0,120,103,0.45)_0%,transparent_70%)] opacity-50" />
+      <div className="pointer-events-none absolute -top-40 -right-60 h-200 w-200 rounded-full bg-[radial-gradient(circle,rgba(97,95,255,0.45)_0%,transparent_70%)] opacity-50" />
+      <div className="pointer-events-none absolute -bottom-60 -left-60 h-200 w-200 rounded-full bg-[radial-gradient(circle,rgba(0,120,103,0.45)_0%,transparent_70%)] opacity-50" />
     </section>
   )
 }

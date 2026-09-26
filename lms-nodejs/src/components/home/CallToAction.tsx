@@ -32,7 +32,7 @@ export default function CallToAction() {
             Subscribe Our Newsletter
           </h1>
 
-          <div className="mx-auto w-full max-w-[420px] text-center">
+          <div className="mx-auto w-full max-w-105 text-center">
             <p className="mb-3 text-white/90 text-sm">
               Subscribe to our newsletter to get latest courses and discounts.
             </p>
@@ -49,10 +49,10 @@ export default function CallToAction() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-[50px] w-full px-4 text-sm text-foreground focus:outline-0 bg-transparent"
+                    className="h-12.5 w-full px-4 text-sm text-foreground focus:outline-0 bg-transparent"
                     placeholder="name@example.com"
                   />
-                  <Button type="submit" className="mr-[3px] h-11 rounded-lg px-6 font-medium">
+                  <Button type="submit" className="mr-0.75 h-11 rounded-lg px-6 font-medium">
                     Subscribe
                   </Button>
                 </div>

@@ -50,14 +50,14 @@ export default function StudentFeedback({ totalReviews }: StudentFeedbackProps) 
 
       <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 rounded-xl bg-card/60 p-6 border border-border">
         {/* Overall Rating */}
-        <div className="flex min-w-[120px] flex-col items-center justify-center">
+        <div className="flex min-w-30 flex-col items-center justify-center">
           <div className="mb-1 text-5xl sm:text-6xl font-extrabold text-amber-500">
             {averageRating}
           </div>
           <div className="mb-2">
             <RatingStars rating={Number(averageRating)} starClass="h-4 w-4" />
           </div>
-          <div className="text-sm font-medium text-amber-600 dark:text-amber-400">
+          <div className="text-sm font-medium text-amber-500">
             Course Rating
           </div>
         </div>

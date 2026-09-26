@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Breadcrumbs from '@/components/breadcrumbs'
+import { Switch } from '@/components/ui/switch'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -146,24 +148,23 @@ export default function DashboardLanguagePage() {
     <DashboardLayout role="admin">
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* Breadcrumbs Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-              <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-              <span>/</span>
-              <span className="text-foreground font-medium">Languages</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Language Settings</h1>
-            <p className="text-xs text-muted-foreground">Configure supported platform locales, directions, and translation keys.</p>
-          </div>
-          <Button
-            onClick={() => setCreateOpen(true)}
-            className="bg-[#007867] hover:bg-[#007867]/90 text-white font-medium text-xs h-9 px-4 gap-2 rounded-xl"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add Language</span>
-          </Button>
-        </div>
+        <Breadcrumbs
+          title="Languages"
+          breadcrumbs={[
+            { title: 'Dashboard', href: '/dashboard' },
+            { title: 'Languages' },
+          ]}
+          action={
+            <Button
+              onClick={() => setCreateOpen(true)}
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Language</span>
+            </Button>
+          }
+          className="mb-4"
+        />
 
         {/* Translation Scope Banner from Laravel */}
         <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5 text-xs text-blue-900 flex items-start gap-3">
@@ -228,20 +229,11 @@ export default function DashboardLanguagePage() {
                         </Button>
                       )}
 
-                      <button
-                        type="button"
-                        onClick={() => handleToggleActive(lang.id, isActive)}
-                        className={`h-6 w-11 rounded-full transition-colors relative cursor-pointer ${
-                          isActive ? 'bg-[#007867]' : 'bg-slate-300'
-                        }`}
-                        title={isActive ? 'Enabled' : 'Disabled'}
-                      >
-                        <span
-                          className={`absolute top-1 left-1 bg-white h-4 w-4 rounded-full transition-transform ${
-                            isActive ? 'translate-x-5' : 'translate-x-0'
-                          }`}
-                        />
-                      </button>
+                      <Switch
+                        checked={isActive}
+                        onCheckedChange={() => handleToggleActive(lang.id, isActive)}
+                        className="cursor-pointer"
+                      />
 
                       {!isDefault && (
                         <Button

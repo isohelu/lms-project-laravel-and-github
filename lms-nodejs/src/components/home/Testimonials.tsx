@@ -82,8 +82,8 @@ export default function Testimonials({
   return (
     <section className="relative overflow-hidden py-20 bg-muted/20">
       {/* Background Ambient Glows */}
-      <div className="pointer-events-none absolute bottom-0 left-0 h-[280px] w-[280px] rounded-full bg-[rgba(0,167,111,0.08)] blur-[140px]" />
-      <div className="pointer-events-none absolute top-0 right-0 h-[280px] w-[280px] rounded-full bg-[rgba(97,95,255,0.08)] blur-[140px]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-70 w-70 rounded-full bg-[rgba(0,167,111,0.08)] blur-[140px]" />
+      <div className="pointer-events-none absolute top-0 right-0 h-70 w-70 rounded-full bg-[rgba(97,95,255,0.08)] blur-[140px]" />
 
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         {/* Header */}

@@ -57,8 +57,8 @@ export default function CareersContent() {
   }
 
   return (
-    <div className="container mx-auto max-w-[1280px] px-4 my-20">
-      <Card className="!shadow-none border border-border bg-card">
+    <div className="container mx-auto max-w-7xl px-4 my-20">
+      <Card className="shadow-none! border border-border bg-card">
         {/* Table Header / Filter */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 border-b border-border">
           <h2 className="text-xl font-bold text-foreground">Job Circulars</h2>

@@ -70,11 +70,13 @@ export async function POST(req: NextRequest) {
 
     await setSessionCookie(sessionUser)
 
+    const redirectUrl = role === 'instructor' ? '/instructor/dashboard' : '/student/dashboard'
+
     return NextResponse.json({
       success: true,
       message: 'Account registered successfully.',
       user: sessionUser,
-      redirect: '/student?tab=courses'
+      redirect: redirectUrl
     }, { status: 201 })
   } catch (error: unknown) {
     console.error('Registration error:', error)

@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith('/instructor') ||
       pathname.startsWith('/student')
     ) {
-      const loginUrl = new URL('/login', request.url)
+      const loginUrl = new URL('/auth/login', request.url)
       loginUrl.searchParams.set('redirect', pathname)
       return NextResponse.redirect(loginUrl)
     }

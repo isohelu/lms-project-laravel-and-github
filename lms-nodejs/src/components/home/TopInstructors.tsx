@@ -41,7 +41,7 @@ export default function TopInstructors({
   return (
     <section className="container py-20">
       {/* Header matching Laravel 1:1 */}
-      <div className="mx-auto mb-10 text-center md:max-w-[480px]">
+      <div className="mx-auto mb-10 text-center md:max-w-120">
         <p className="mb-1 font-medium text-secondary-foreground">
           Top Instructors
         </p>
