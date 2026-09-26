@@ -30,6 +30,8 @@ export default function Login({ status, recaptcha, googleLogIn }: LoginProps) {
    const { auth, input, button } = props.translate;
    const recaptchaRef = useRef<ReCAPTCHA | null>(null);
    const [recaptchaToken, setRecaptchaToken] = useState('');
+   const [emailValue, setEmailValue] = useState('');
+   const [passwordValue, setPasswordValue] = useState('');
 
    return (
       <AuthLayout
@@ -53,7 +55,7 @@ export default function Login({ status, recaptcha, googleLogIn }: LoginProps) {
             {({ processing, errors }) => (
                <>
                   <div className="grid gap-6">
-                     <div className="grid gap-2">
+                      <div className="grid gap-2">
                         <Label htmlFor="email">{input.email}</Label>
                         <Input
                            id="email"
@@ -64,6 +66,8 @@ export default function Login({ status, recaptcha, googleLogIn }: LoginProps) {
                            tabIndex={1}
                            autoComplete="email"
                            placeholder={input.email_placeholder}
+                           value={emailValue}
+                           onChange={(e) => setEmailValue(e.target.value)}
                         />
                         <InputError message={errors.email} />
                      </div>
@@ -86,6 +90,8 @@ export default function Login({ status, recaptcha, googleLogIn }: LoginProps) {
                            tabIndex={2}
                            autoComplete="current-password"
                            placeholder={input.password_placeholder}
+                           value={passwordValue}
+                           onChange={(e) => setPasswordValue(e.target.value)}
                         />
                         <InputError message={errors.password} />
                      </div>
@@ -117,6 +123,75 @@ export default function Login({ status, recaptcha, googleLogIn }: LoginProps) {
                      >
                         {button.login}
                      </LoadingButton>
+
+                     {/* Instant Demo Accounts Panel */}
+                     <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                           <div className="flex items-center gap-1.5">
+                              <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                              <span className="text-xs font-semibold text-foreground tracking-wide">
+                                 Instant Demo Accounts
+                              </span>
+                           </div>
+                           <span className="text-[11px] text-muted-foreground font-mono bg-background/80 px-2 py-0.5 rounded border border-border">
+                              Password: <strong className="text-foreground">password123</strong>
+                           </span>
+                        </div>
+
+                        <p className="text-[11px] text-muted-foreground">
+                           Click any role below to auto-fill credentials:
+                        </p>
+
+                        <div className="grid grid-cols-3 gap-2">
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 setEmailValue('admin@mentor.test');
+                                 setPasswordValue('password123');
+                              }}
+                              className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer text-center ${
+                                 emailValue === 'admin@mentor.test'
+                                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                                    : 'border-border bg-background hover:border-primary/50 hover:bg-muted/50'
+                              }`}
+                           >
+                              <span className="text-xs font-bold text-foreground">👑 Admin</span>
+                              <span className="text-[10px] text-muted-foreground truncate w-full mt-0.5">admin@mentor.test</span>
+                           </button>
+                           
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 setEmailValue('instructor@mentor.test');
+                                 setPasswordValue('password123');
+                              }}
+                              className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer text-center ${
+                                 emailValue === 'instructor@mentor.test'
+                                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                                    : 'border-border bg-background hover:border-primary/50 hover:bg-muted/50'
+                              }`}
+                           >
+                              <span className="text-xs font-bold text-foreground">🎓 Instructor</span>
+                              <span className="text-[10px] text-muted-foreground truncate w-full mt-0.5">instructor@mentor.test</span>
+                           </button>
+                           
+                           <button
+                              type="button"
+                              onClick={() => {
+                                 setEmailValue('student@mentor.test');
+                                 setPasswordValue('password123');
+                              }}
+                              className={`flex flex-col items-center justify-center p-2 rounded-lg border transition-all cursor-pointer text-center ${
+                                 emailValue === 'student@mentor.test'
+                                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                                    : 'border-border bg-background hover:border-primary/50 hover:bg-muted/50'
+                              }`}
+                           >
+                              <span className="text-xs font-bold text-foreground">🎒 Student</span>
+                              <span className="text-[10px] text-muted-foreground truncate w-full mt-0.5">student@mentor.test</span>
+                           </button>
+                        </div>
+                     </div>
 
                      {googleLogIn && (
                         <>

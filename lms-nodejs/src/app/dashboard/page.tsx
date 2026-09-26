@@ -36,10 +36,12 @@ export default function RoleAwareDashboardPage() {
         }
 
         const userRole = data.user.role || 'student'
-        if (userRole === 'admin' || userRole === 'instructor') {
-          setRole(userRole)
+        if (userRole === 'admin') {
+          window.location.href = '/admin/dashboard'
+        } else if (userRole === 'instructor') {
+          window.location.href = '/instructor/dashboard'
         } else {
-          router.replace('/student/dashboard')
+          window.location.href = '/student/dashboard'
         }
       } catch {
         router.replace('/login')

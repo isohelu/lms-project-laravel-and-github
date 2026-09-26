@@ -299,13 +299,13 @@ export default function DashboardManageCoursesPage() {
                   {/* Assignments Count */}
                   <TableCell>
                     <div className="py-1 text-center">
-                      <Button asChild variant="outline" size="sm">
+                      <Button asChild variant="outline">
                         <Link href={`/dashboard/courses/${course.id}/assignments`}>
-                          <Eye className="mr-1 h-3.5 w-3.5" />
-                          {course.assignments_count || 0}{' '}
-                          {(course.assignments_count || 0) === 1
-                            ? 'Assignment'
-                            : 'Assignments'}
+                          <Eye className="h-4 w-4" />
+                          {course.assignments_count || 0}
+                          {(course.assignments_count || 0) > 1
+                            ? ' Assignments'
+                            : ' Assignment'}
                         </Link>
                       </Button>
                     </div>

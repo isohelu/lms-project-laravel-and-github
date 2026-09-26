@@ -1,9 +1,9 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\NewsletterController::index
-* @see app/Http/Controllers/NewsletterController.php:19
-* @route '/dashboard/newsletters'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:19
+ * @route '/dashboard/newsletters'
+ */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
     method: 'get',
@@ -16,75 +16,72 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\NewsletterController::index
-* @see app/Http/Controllers/NewsletterController.php:19
-* @route '/dashboard/newsletters'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:19
+ * @route '/dashboard/newsletters'
+ */
 index.url = (options?: RouteQueryOptions) => {
     return index.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\NewsletterController::index
-* @see app/Http/Controllers/NewsletterController.php:19
-* @route '/dashboard/newsletters'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:19
+ * @route '/dashboard/newsletters'
+ */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
     method: 'get',
 })
-
 /**
 * @see \App\Http\Controllers\NewsletterController::index
-* @see app/Http/Controllers/NewsletterController.php:19
-* @route '/dashboard/newsletters'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:19
+ * @route '/dashboard/newsletters'
+ */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
 
-/**
+    /**
 * @see \App\Http\Controllers\NewsletterController::index
-* @see app/Http/Controllers/NewsletterController.php:19
-* @route '/dashboard/newsletters'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
+ * @see app/Http/Controllers/NewsletterController.php:19
+ * @route '/dashboard/newsletters'
+ */
+    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: index.url(options),
+        method: 'get',
+    })
 
-/**
+            /**
 * @see \App\Http\Controllers\NewsletterController::index
-* @see app/Http/Controllers/NewsletterController.php:19
-* @route '/dashboard/newsletters'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
+ * @see app/Http/Controllers/NewsletterController.php:19
+ * @route '/dashboard/newsletters'
+ */
+        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(options),
+            method: 'get',
+        })
+            /**
 * @see \App\Http\Controllers\NewsletterController::index
-* @see app/Http/Controllers/NewsletterController.php:19
-* @route '/dashboard/newsletters'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
-
+ * @see app/Http/Controllers/NewsletterController.php:19
+ * @route '/dashboard/newsletters'
+ */
+        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    index.form = indexForm
 /**
 * @see \App\Http\Controllers\NewsletterController::store
-* @see app/Http/Controllers/NewsletterController.php:29
-* @route '/dashboard/newsletters'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:29
+ * @route '/dashboard/newsletters'
+ */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
@@ -97,50 +94,49 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\NewsletterController::store
-* @see app/Http/Controllers/NewsletterController.php:29
-* @route '/dashboard/newsletters'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:29
+ * @route '/dashboard/newsletters'
+ */
 store.url = (options?: RouteQueryOptions) => {
     return store.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\NewsletterController::store
-* @see app/Http/Controllers/NewsletterController.php:29
-* @route '/dashboard/newsletters'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:29
+ * @route '/dashboard/newsletters'
+ */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
 
-/**
+    /**
 * @see \App\Http\Controllers\NewsletterController::store
-* @see app/Http/Controllers/NewsletterController.php:29
-* @route '/dashboard/newsletters'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
+ * @see app/Http/Controllers/NewsletterController.php:29
+ * @route '/dashboard/newsletters'
+ */
+    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: store.url(options),
+        method: 'post',
+    })
 
-/**
+            /**
 * @see \App\Http\Controllers\NewsletterController::store
-* @see app/Http/Controllers/NewsletterController.php:29
-* @route '/dashboard/newsletters'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
-
+ * @see app/Http/Controllers/NewsletterController.php:29
+ * @route '/dashboard/newsletters'
+ */
+        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: store.url(options),
+            method: 'post',
+        })
+    
+    store.form = storeForm
 /**
 * @see \App\Http\Controllers\NewsletterController::update
-* @see app/Http/Controllers/NewsletterController.php:39
-* @route '/dashboard/newsletters/{newsletter}'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:39
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
 export const update = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
@@ -153,25 +149,26 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\NewsletterController::update
-* @see app/Http/Controllers/NewsletterController.php:39
-* @route '/dashboard/newsletters/{newsletter}'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:39
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
 update.url = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { newsletter: args }
     }
 
+    
     if (Array.isArray(args)) {
         args = {
-            newsletter: args[0],
-        }
+                    newsletter: args[0],
+                }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        newsletter: args.newsletter,
-    }
+                        newsletter: args.newsletter,
+                }
 
     return update.definition.url
             .replace('{newsletter}', parsedArgs.newsletter.toString())
@@ -180,76 +177,73 @@ update.url = (args: { newsletter: string | number } | [newsletter: string | numb
 
 /**
 * @see \App\Http\Controllers\NewsletterController::update
-* @see app/Http/Controllers/NewsletterController.php:39
-* @route '/dashboard/newsletters/{newsletter}'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:39
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
 update.put = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
-
 /**
 * @see \App\Http\Controllers\NewsletterController::update
-* @see app/Http/Controllers/NewsletterController.php:39
-* @route '/dashboard/newsletters/{newsletter}'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:39
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
 update.patch = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
 
-/**
+    /**
 * @see \App\Http\Controllers\NewsletterController::update
-* @see app/Http/Controllers/NewsletterController.php:39
-* @route '/dashboard/newsletters/{newsletter}'
-*/
-const updateForm = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
+ * @see app/Http/Controllers/NewsletterController.php:39
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
+    const updateForm = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: update.url(args, {
+                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                        _method: 'PUT',
+                        ...(options?.query ?? options?.mergeQuery ?? {}),
+                    }
+                }),
+        method: 'post',
+    })
 
-/**
+            /**
 * @see \App\Http\Controllers\NewsletterController::update
-* @see app/Http/Controllers/NewsletterController.php:39
-* @route '/dashboard/newsletters/{newsletter}'
-*/
-updateForm.put = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
+ * @see app/Http/Controllers/NewsletterController.php:39
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
+        updateForm.put = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: update.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'PUT',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+            /**
 * @see \App\Http\Controllers\NewsletterController::update
-* @see app/Http/Controllers/NewsletterController.php:39
-* @route '/dashboard/newsletters/{newsletter}'
-*/
-updateForm.patch = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
+ * @see app/Http/Controllers/NewsletterController.php:39
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
+        updateForm.patch = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: update.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'PATCH',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+    
+    update.form = updateForm
 /**
 * @see \App\Http\Controllers\NewsletterController::destroy
-* @see app/Http/Controllers/NewsletterController.php:49
-* @route '/dashboard/newsletters/{newsletter}'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:49
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
 export const destroy = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
@@ -262,25 +256,26 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\NewsletterController::destroy
-* @see app/Http/Controllers/NewsletterController.php:49
-* @route '/dashboard/newsletters/{newsletter}'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:49
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
 destroy.url = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { newsletter: args }
     }
 
+    
     if (Array.isArray(args)) {
         args = {
-            newsletter: args[0],
-        }
+                    newsletter: args[0],
+                }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        newsletter: args.newsletter,
-    }
+                        newsletter: args.newsletter,
+                }
 
     return destroy.definition.url
             .replace('{newsletter}', parsedArgs.newsletter.toString())
@@ -289,51 +284,50 @@ destroy.url = (args: { newsletter: string | number } | [newsletter: string | num
 
 /**
 * @see \App\Http\Controllers\NewsletterController::destroy
-* @see app/Http/Controllers/NewsletterController.php:49
-* @route '/dashboard/newsletters/{newsletter}'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:49
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
 destroy.delete = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
 
-/**
+    /**
 * @see \App\Http\Controllers\NewsletterController::destroy
-* @see app/Http/Controllers/NewsletterController.php:49
-* @route '/dashboard/newsletters/{newsletter}'
-*/
-const destroyForm = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
+ * @see app/Http/Controllers/NewsletterController.php:49
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
+    const destroyForm = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: destroy.url(args, {
+                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                        _method: 'DELETE',
+                        ...(options?.query ?? options?.mergeQuery ?? {}),
+                    }
+                }),
+        method: 'post',
+    })
 
-/**
+            /**
 * @see \App\Http\Controllers\NewsletterController::destroy
-* @see app/Http/Controllers/NewsletterController.php:49
-* @route '/dashboard/newsletters/{newsletter}'
-*/
-destroyForm.delete = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
-
+ * @see app/Http/Controllers/NewsletterController.php:49
+ * @route '/dashboard/newsletters/{newsletter}'
+ */
+        destroyForm.delete = (args: { newsletter: string | number } | [newsletter: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: destroy.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'DELETE',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+    
+    destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\NewsletterController::newsletter_send
-* @see app/Http/Controllers/NewsletterController.php:59
-* @route '/dashboard/newsletters/send'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:59
+ * @route '/dashboard/newsletters/send'
+ */
 export const newsletter_send = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: newsletter_send.url(options),
     method: 'post',
@@ -346,45 +340,44 @@ newsletter_send.definition = {
 
 /**
 * @see \App\Http\Controllers\NewsletterController::newsletter_send
-* @see app/Http/Controllers/NewsletterController.php:59
-* @route '/dashboard/newsletters/send'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:59
+ * @route '/dashboard/newsletters/send'
+ */
 newsletter_send.url = (options?: RouteQueryOptions) => {
     return newsletter_send.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Http\Controllers\NewsletterController::newsletter_send
-* @see app/Http/Controllers/NewsletterController.php:59
-* @route '/dashboard/newsletters/send'
-*/
+ * @see app/Http/Controllers/NewsletterController.php:59
+ * @route '/dashboard/newsletters/send'
+ */
 newsletter_send.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: newsletter_send.url(options),
     method: 'post',
 })
 
-/**
+    /**
 * @see \App\Http\Controllers\NewsletterController::newsletter_send
-* @see app/Http/Controllers/NewsletterController.php:59
-* @route '/dashboard/newsletters/send'
-*/
-const newsletter_sendForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: newsletter_send.url(options),
-    method: 'post',
-})
+ * @see app/Http/Controllers/NewsletterController.php:59
+ * @route '/dashboard/newsletters/send'
+ */
+    const newsletter_sendForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: newsletter_send.url(options),
+        method: 'post',
+    })
 
-/**
+            /**
 * @see \App\Http\Controllers\NewsletterController::newsletter_send
-* @see app/Http/Controllers/NewsletterController.php:59
-* @route '/dashboard/newsletters/send'
-*/
-newsletter_sendForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: newsletter_send.url(options),
-    method: 'post',
-})
-
-newsletter_send.form = newsletter_sendForm
-
+ * @see app/Http/Controllers/NewsletterController.php:59
+ * @route '/dashboard/newsletters/send'
+ */
+        newsletter_sendForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: newsletter_send.url(options),
+            method: 'post',
+        })
+    
+    newsletter_send.form = newsletter_sendForm
 const NewsletterController = { index, store, update, destroy, newsletter_send }
 
 export default NewsletterController

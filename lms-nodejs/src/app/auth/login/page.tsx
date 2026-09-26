@@ -49,18 +49,13 @@ export default function AuthLoginPage() {
       const searchParams = new URLSearchParams(window.location.search)
       const redirectUrl = searchParams.get('redirect')
 
-      if (redirectUrl) {
-        router.push(redirectUrl)
-      } else if (data.redirect) {
-        router.push(data.redirect)
-      } else if (role === 'admin') {
-        router.push('/admin/dashboard')
-      } else if (role === 'instructor') {
-        router.push('/instructor/dashboard')
-      } else {
-        router.push('/student/dashboard')
+      let targetUrl = data.redirect || (role === 'admin' ? '/admin/dashboard' : role === 'instructor' ? '/instructor/dashboard' : '/student/dashboard')
+      if (redirectUrl && redirectUrl !== '/dashboard' && redirectUrl !== '/auth/login' && redirectUrl !== '/login') {
+        targetUrl = redirectUrl
       }
-      router.refresh()
+
+      // Hard navigation ensures fresh session cookies are loaded into all server/client components
+      window.location.href = targetUrl
     } catch {
       setErrorMsg('Failed to connect to authentication service. Please check your network.')
       setLoading(false)
@@ -146,39 +141,67 @@ export default function AuthLoginPage() {
           </div>
 
           {/* Quick Demo Credentials Panel */}
-          <div className="rounded-xl border border-border bg-muted/30 p-3.5 space-y-2.5">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-foreground tracking-wide">
-                Select Demo Role
-              </span>
-              <span className="text-[11px] text-muted-foreground font-mono">
-                Password: {DEMO_PASSWORD}
+              <div className="flex items-center gap-1.5">
+                <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-xs font-semibold text-foreground tracking-wide">
+                  Instant Demo Accounts
+                </span>
+              </div>
+              <span className="text-[11px] text-muted-foreground font-mono bg-background/80 px-2 py-0.5 rounded border border-border">
+                Password: <strong className="text-foreground">{DEMO_PASSWORD}</strong>
               </span>
             </div>
-            <div className="grid grid-cols-3 gap-1.5">
+
+            <p className="text-[11px] text-muted-foreground">
+              Click any role below to auto-fill credentials and sign in immediately:
+            </p>
+
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => fillDemoCredentials('admin@admin.com')}
-                className="flex flex-col items-center justify-center p-2 rounded-lg border border-border/80 bg-background hover:border-primary/50 hover:bg-muted/50 transition-colors text-center cursor-pointer group"
+                onClick={() => {
+                  fillDemoCredentials('admin@mentor.test')
+                }}
+                className={`flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all cursor-pointer text-center ${
+                  email === 'admin@mentor.test' || email === 'admin@admin.com'
+                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                    : 'border-border bg-background hover:border-primary/50 hover:bg-muted/50'
+                }`}
               >
-                <span className="text-xs font-semibold text-foreground group-hover:text-primary">Admin</span>
-                <span className="text-[10px] text-muted-foreground truncate w-full">admin@admin.com</span>
+                <span className="text-xs font-bold text-foreground">👑 Admin</span>
+                <span className="text-[10px] text-muted-foreground truncate w-full mt-0.5">admin@mentor.test</span>
               </button>
+              
               <button
                 type="button"
-                onClick={() => fillDemoCredentials('instructor@mentor.test')}
-                className="flex flex-col items-center justify-center p-2 rounded-lg border border-border/80 bg-background hover:border-primary/50 hover:bg-muted/50 transition-colors text-center cursor-pointer group"
+                onClick={() => {
+                  fillDemoCredentials('instructor@mentor.test')
+                }}
+                className={`flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all cursor-pointer text-center ${
+                  email === 'instructor@mentor.test'
+                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                    : 'border-border bg-background hover:border-primary/50 hover:bg-muted/50'
+                }`}
               >
-                <span className="text-xs font-semibold text-foreground group-hover:text-primary">Instructor</span>
-                <span className="text-[10px] text-muted-foreground truncate w-full">instructor@mentor.test</span>
+                <span className="text-xs font-bold text-foreground">🎓 Instructor</span>
+                <span className="text-[10px] text-muted-foreground truncate w-full mt-0.5">instructor@mentor.test</span>
               </button>
+              
               <button
                 type="button"
-                onClick={() => fillDemoCredentials('student@mentor.test')}
-                className="flex flex-col items-center justify-center p-2 rounded-lg border border-border/80 bg-background hover:border-primary/50 hover:bg-muted/50 transition-colors text-center cursor-pointer group"
+                onClick={() => {
+                  fillDemoCredentials('student@mentor.test')
+                }}
+                className={`flex flex-col items-center justify-center p-2.5 rounded-lg border transition-all cursor-pointer text-center ${
+                  email === 'student@mentor.test'
+                    ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                    : 'border-border bg-background hover:border-primary/50 hover:bg-muted/50'
+                }`}
               >
-                <span className="text-xs font-semibold text-foreground group-hover:text-primary">Student</span>
-                <span className="text-[10px] text-muted-foreground truncate w-full">student@mentor.test</span>
+                <span className="text-xs font-bold text-foreground">🎒 Student</span>
+                <span className="text-[10px] text-muted-foreground truncate w-full mt-0.5">student@mentor.test</span>
               </button>
             </div>
           </div>
